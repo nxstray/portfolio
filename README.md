@@ -19,17 +19,17 @@ A modern, interactive portfolio website built with Vue 3 and Vite, featuring a G
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** Vue 3 (Composition API)
+- **Frontend:** Vue 3
 - **Build Tool:** Vite
-- **Styling:** CSS3 (Scoped Styles)
+- **Styling:** CSS3
 - **Deployment:** Vercel
-- **Containerization:** Docker (optional)
+- **Containerization:** Docker
 
 ## 📋 Prerequisites
 
 - Node.js 18+ and npm
 - Git
-- Docker (optional, for containerized deployment)
+- Docker
 
 ## 🏃 Quick Start
 
@@ -158,7 +158,7 @@ Type in the search bar and press Enter:
 
 - **Tab Overlay Design:** Inspired by [Olivia Ng](https://codepen.io/oliviale/pen/bGWXEWK)
 - **Sleeping Cat Animation:** Inspired by [Marcel](https://codepen.io/scjaabkw-the-looper/pen/JoXKvwP)
-- **Interface Design:** Google Chrome New Tab
+- **Interface Design:** My Google Chrome New Tab
 
 ## 📝 License
 
@@ -171,14 +171,6 @@ This project is open source and available under the [MIT License](LICENSE).
 - LinkedIn: [@afwan-apriansyah](https://www.linkedin.com/in/afwan-apriansyah/)
 - GitHub: [@nxstray](https://github.com/nxstray)
 - Email: afwanapriansyah@gmail.com
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!
-
-## ⭐ Show Your Support
-
-Give a ⭐️ if you like this project!
 
 ---
 
