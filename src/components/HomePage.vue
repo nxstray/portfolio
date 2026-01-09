@@ -142,11 +142,37 @@
                     <img :src="tab.images[1]" alt="Preview" class="more-bg" />
                     <span class="more-text">+{{ tab.images.length - 1 }}</span>
                   </div>
+
+                  <!-- In Progress Note -->
+                  <div v-if="tab.inProgress" class="progress-note">
+                    <span class="progress-text">* This project is currently in progress and will be deployed to production soon</span>
+                  </div>
                 </div>
-                
-                <!-- Project Description -->
-                <div class="project-description">
-                  <p>{{ tab.description }}</p>
+
+                <!-- Project Overview -->
+                <div class="project-overview">
+                  <div class="overview-header">
+                    <div class="role-badge">
+                      <span class="role-dot"></span>
+                      {{ tab.role }}
+                    </div>
+                  </div>
+                  <p class="overview-text">{{ tab.overview }}</p>
+                </div>
+
+                <!-- Skills & Competencies -->
+                <div v-if="tab.skills" class="project-skills">
+                  <div class="skills-header">Key Skills Demonstrated</div>
+                  <div class="skills-grid">
+                    <div 
+                      v-for="(skill, skillIndex) in tab.skills" 
+                      :key="skillIndex"
+                      class="skill-item"
+                    >
+                      <img :src="checkIcon" alt="Check" class="skill-check" />
+                      <span>{{ skill }}</span>
+                    </div>
+                  </div>
                 </div>
                 
                 <!-- Tools Used -->
@@ -169,12 +195,13 @@
                   <a 
                     v-for="(repo, repoIndex) in tab.repos" 
                     :key="repoIndex"
-                    :href="repo.url"
-                    target="_blank"
-                    :class="['repo-card', { 'has-cat': repo.name === 'WebPI-backend' }]"
+                    :href="repo.isPrivate ? '#' : repo.url"
+                    :target="repo.isPrivate ? '_self' : '_blank'"
+                    :class="['repo-card', { 'has-cat': repo.name.toLowerCase().includes('backend') }]"
+                    @click="repo.isPrivate ? $event.preventDefault() : null"
                   >
                     <!-- Sleeping Cat Animation (only for backend repo) -->
-                    <div v-if="repo.name === 'WebPI-backend'" class="sleeping-cat">
+                    <div v-if="repo.name.toLowerCase().includes('backend')" class="sleeping-cat">
                       <div class="sleep-symbol">
                         <span>Z</span>
                         <span>z</span>
@@ -231,7 +258,7 @@
                     <div class="repo-header">
                       <img :src="githubIcon" alt="GitHub" class="repo-icon" />
                       <span class="repo-name">{{ repo.name }}</span>
-                      <span class="repo-badge">Public</span>
+                      <span class="repo-badge">{{ repo.isPrivate ? 'Private' : 'Public' }}</span>
                     </div>
                     <div class="repo-language">
                       <span class="language-dot" :style="{ backgroundColor: getToolColor(repo.language) }"></span>
@@ -280,6 +307,16 @@
         </button>
       </div>
     </Transition>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <span class="footer-text">
+        © Google | Tab overlay inspired by 
+        <a href="https://codepen.io/oliviale/pen/bGWXEWK" target="_blank" rel="noopener noreferrer">Olivia Ng</a>
+        | Sleeping cat inspired by 
+        <a href="https://codepen.io/scjaabkw-the-looper/pen/JoXKvwP" target="_blank" rel="noopener noreferrer">Marcel</a>
+      </span>
+    </footer>
   </div>
 </template>
 
@@ -295,6 +332,7 @@ import appIcon from '@/assets/icons/app.svg'
 import labIcon from '@/assets/icons/labs.svg'
 import helpIcon from '@/assets/icons/help.svg'
 import editIcon from '@/assets/icons/edit.svg'
+import checkIcon from '@/assets/icons/check.svg'
 import photoIcon from '@/assets/icons/photo.svg'
 import closeIcon from '@/assets/icons/close.svg'
 import cameraIcon from '@/assets/icons/camera.svg'
@@ -312,6 +350,24 @@ import gunadata4 from '@/assets/contents/gunadata-4.png'
 import gunadata5 from '@/assets/contents/gunadata-5.png'
 import gunadata6 from '@/assets/contents/gunadata-6.png'
 
+import pandigi1 from '@/assets/contents/pandigi-1.png'
+import pandigi2 from '@/assets/contents/pandigi-2.png'
+import pandigi3 from '@/assets/contents/pandigi-3.png'
+import pandigi4 from '@/assets/contents/pandigi-4.png'
+import pandigi5 from '@/assets/contents/pandigi-5.png'
+import pandigi6 from '@/assets/contents/pandigi-6.png'
+import pandigi7 from '@/assets/contents/pandigi-7.png'
+import pandigi8 from '@/assets/contents/pandigi-8.png'
+import pandigi9 from '@/assets/contents/pandigi-9.png'
+import pandigi10 from '@/assets/contents/pandigi-10.png'
+import pandigi11 from '@/assets/contents/pandigi-11.png'
+import pandigi12 from '@/assets/contents/pandigi-12.png'
+import pandigi13 from '@/assets/contents/pandigi-13.png'
+
+import carrental1 from '@/assets/contents/carrental-1.png'
+import carrental2 from '@/assets/contents/carrental-2.png'
+import carrental3 from '@/assets/contents/carrental-3.png'
+
 const showModal = ref(false)
 const showNotification = ref(false)
 const showProjectsModal = ref(false)
@@ -324,6 +380,9 @@ const toolColors = {
   'Angular': '#dd0031',
   'Spring Boot': '#6db33f',
   'MySQL Workbench': '#00758f',
+  'PostgreSQL': '#4169e1',
+  'Docker': '#2496ed',
+  'RabbitMQ': '#ff6600',
   'React': '#61dafb',
   'Vue': '#42b883',
   'Node.js': '#339933',
@@ -362,11 +421,58 @@ const projectTabs = ref([
   {
     name: 'GunaData',
     images: [gunadata1, gunadata2, gunadata3, gunadata4, gunadata5, gunadata6],
-    description: 'Developed to assist students (especially Gunadarma students) in solving statistical problems, particularly using the Bivariate Pearson Correlation and One-Way ANOVA methods. Intended to simplify complex statistical formulas by automating the calculations and providing clear, easy-to-read output, reducing the burden of manual computation and interpretation for users. Contributed as both the Front-End and Back-End developer, fully responsible for the design and development of the application. Key responsibilities include designing a structured and responsive UI that makes the tools accessible and intuitive, handling form inputs, validation, and asynchronous data flow between the Angular frontend and the Spring Boot backend using REST APIs, and storing user input and processed data securely using MySQL Workbench.',
-    tools: ['Angular', 'Spring Boot', 'MySQL Workbench'],
+    overview: 'A statistical analysis tool designed for students to simplify complex calculations in Bivariate Pearson Correlation and One-Way ANOVA methods, featuring automated computation and clean data visualization.',
+    role: 'Full Stack Developer',
+    skills: [
+      'Full-Stack Development',
+      'RESTful API',
+      'Database Management',
+      'Component-Based Architecture',
+      'Form Validation & State Management',
+      'CI/CD Implementation'
+    ],
+    tools: ['Angular', 'Spring Boot', 'MySQL Workbench', 'Docker'],
     repos: [
       { name: 'WebPI-frontend', url: 'https://github.com/nxstray/WebPI-frontend', language: 'TypeScript' },
       { name: 'WebPI-backend', url: 'https://github.com/nxstray/WebPI-backend', language: 'Java' }
+    ]
+  },
+  {
+    name: 'Pandigi',
+    images: [pandigi1, pandigi2, pandigi3, pandigi4, pandigi5, pandigi6, pandigi7, pandigi8, pandigi9, pandigi10, pandigi11, pandigi12, pandigi13],
+    overview: 'A comprehensive client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
+    role: 'Full Stack Developer',
+    skills: [
+      'AI/ML Integration',
+      'Real-time Notifications',
+      'Full-stack Development',
+      'JWT Authentication & Authorization',
+      'Containerization',
+      'Advanced Database Design'
+    ],
+    tools: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker', 'RabbitMQ'],
+    repos: [
+      { name: 'pppl-frontend', url: 'https://github.com/nxstray/pppl-frontend', language: 'TypeScript' },
+      { name: 'pppl-backend', url: 'https://github.com/nxstray/pppl-backend', language: 'Java' }
+    ],
+    inProgress: true
+  },
+  {
+    name: 'Car Rental',
+    images: [carrental1, carrental2, carrental3],
+    overview: 'A car rental management system designed to handle vehicle inventory management, customer registration, rental transaction processing, and real-time availability tracking, featuring an intuitive desktop GUI.',
+    role: 'Backend Developer',
+    skills: [
+      'Desktop Application Development',
+      'Spring Boot Framework',
+      'JPA/Hibernate ORM',
+      'Database Design & Management',
+      'Swing GUI Development',
+      'CRUD Operations'
+    ],
+    tools: ['Spring Boot', 'PostgreSQL'],
+    repos: [
+      { name: 'RPL2-ujian', url: '#', language: 'Java', isPrivate: true }
     ]
   }
 ])
@@ -1067,12 +1173,12 @@ const downloadCV = () => {
   background: rgb(235, 238, 241);
   border: 1px solid #797979;
   border-radius: 24px;
-  padding: 10px 24px;
+  padding: 9px 24px ;
   font-size: 13px;
   color: #055bcc;
   font-weight: 500;
   cursor: pointer;
-  margin-top: 2px;
+  margin-top: 1px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   transition: background 0.2s, box-shadow 0.2s;
 }
@@ -1126,7 +1232,7 @@ const downloadCV = () => {
 }
 
 .tab {
-  font-family: 'Patrick Hand', cursive;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   line-height: 0.8;
   display: inline-block;
   margin-left: -35px;
@@ -1208,6 +1314,58 @@ const downloadCV = () => {
   color: black;
 }
 
+/* Green theme for PANDIGI tab */
+.tab:nth-child(2) div,
+.tab:nth-child(2):before,
+.tab:nth-child(2):after {
+  background: linear-gradient(to bottom, #a8e6a1, #76c776);
+}
+
+.tab:nth-child(2).active span {
+  background: white;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #4a934a;
+  color: black;
+}
+
+/* Progress Note */
+.progress-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: 6px;
+  margin-bottom: 1.5rem;
+  font-size: 12px;
+  color: #856404;
+}
+
+.progress-icon {
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.progress-text {
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Blue theme for Car Rental tab */
+.tab:nth-child(3) div,
+.tab:nth-child(3):before,
+.tab:nth-child(3):after {
+  background: linear-gradient(to bottom, #a1c9e6, #6ba5d6);
+}
+
+.tab:nth-child(3).active span {
+  background: white;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+  border: 2px solid #4a7a9a;
+  color: black;
+}
+
 .content-wrapper {
   border-radius: 10px;
   position: relative;
@@ -1225,6 +1383,16 @@ const downloadCV = () => {
 
 .content__inner.active {
   display: block;
+}
+
+/* Warna hijau untuk tab Pandigi (tab ke-2) */
+.content__inner:nth-child(2).active {
+  background: linear-gradient(to bottom, #76c776, #a8e6a1) !important;
+}
+
+/* Warna biru untuk tab Car Rental (tab ke-3) */
+.content__inner:nth-child(3).active {
+  background: linear-gradient(to bottom, #6ba5d6, #a1c9e6) !important;
 }
 
 .page {
@@ -1302,16 +1470,96 @@ const downloadCV = () => {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.237);
 }
 
-/* Project Description */
-.project-description {
+/* Project Overview */
+.project-overview {
   margin-bottom: 1.5rem;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
 }
 
-.project-description p {
+.overview-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.role-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #dadadb;
+  color: #3a3939;
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.role-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #686e78;
+}
+
+.overview-text {
   margin: 0;
-  color: #333;
+  color: #5f6368;
   font-size: 14px;
   line-height: 1.6;
+}
+
+/* Skills & Competencies */
+.project-skills {
+  margin-bottom: 1.5rem;
+  padding: 16px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+}
+
+.skills-header {
+  font-size: 14px;
+  font-weight: 600;
+  color: #202124;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid #e8f0fe;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.skill-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.skill-item:hover {
+  background: #f8f9fa;
+}
+
+.skill-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  filter: brightness(0) saturate(100%);
+}
+
+.skill-item span {
+  font-size: 13px;
+  font-weight: 500;
+  color: #3c4043;
+  line-height: 1.4;
 }
 
 /* Project Tools */
@@ -1372,6 +1620,16 @@ const downloadCV = () => {
   flex: 1;
   min-width: 250px;
   max-width: 48%;
+}
+
+.repo-card[href="#"] {
+  cursor: default;
+  opacity: 0.85;
+}
+
+.repo-card[href="#"]:hover {
+  border-color: #d0d7de;
+  box-shadow: none;
 }
 
 .repo-card:hover {
@@ -1455,7 +1713,6 @@ const downloadCV = () => {
   opacity: 1;
   transform: scale(1);
   animation: sleep 4s ease-in-out infinite;
-  font-family: 'Sour Gummy', sans-serif;
 }
 
 .sleep-symbol span:nth-child(1) {
@@ -1611,5 +1868,36 @@ const downloadCV = () => {
   transform: translateX(-50%);
   font-size: 14px;
   font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 12px 20px;
+  text-align: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.footer-text {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  pointer-events: auto;
+}
+
+.footer-text a {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.footer-text a:hover {
+  color: #ffffff;
+  text-decoration: underline;
 }
 </style>
