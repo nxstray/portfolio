@@ -47,7 +47,7 @@
             </button>
             <button class="ai-mode-btn">
               <img :src="searchSparkIcon" alt="AI" class="ai-icon" />
-              AI Mode
+              <span class="ai-text">AI Mode</span>
             </button>
           </div>
         </div>
@@ -142,18 +142,12 @@
                     <img :src="tab.images[1]" alt="Preview" class="more-bg" />
                     <span class="more-text">+{{ tab.images.length - 1 }}</span>
                   </div>
-
-                  <!-- In Progress Note -->
-                  <div v-if="tab.inProgress" class="progress-note">
-                    <span class="progress-text">* This project is currently in progress and will be deployed to production soon</span>
-                  </div>
                 </div>
 
                 <!-- Project Overview -->
                 <div class="project-overview">
                   <div class="overview-header">
                     <div class="role-badge">
-                      <span class="role-dot"></span>
                       {{ tab.role }}
                     </div>
                   </div>
@@ -276,6 +270,7 @@
     <!-- Notification Popup -->
     <Transition name="slide">
       <div v-if="showNotification" class="notification-popup">
+        <div class="notification-progress"></div>
         <img :src="helpIcon" alt="Help" class="notification-icon" />
         <div class="notification-content">
           <div class="notification-title">Tips</div>
@@ -455,12 +450,11 @@ const projectTabs = ref([
       { name: 'pppl-frontend', url: 'https://github.com/nxstray/pppl-frontend', language: 'TypeScript' },
       { name: 'pppl-backend', url: 'https://github.com/nxstray/pppl-backend', language: 'Java' }
     ],
-    inProgress: true
   },
   {
     name: 'Car Rental',
     images: [carrental1, carrental2, carrental3],
-    overview: 'A car rental management system designed to handle vehicle inventory management, customer registration, rental transaction processing, and real-time availability tracking, featuring an intuitive desktop GUI.',
+    overview: 'A car rental management system designed to handle vehicle inventory, customer registration, rental transaction processing, and featuring an intuitive desktop GUI.',
     role: 'Backend Developer',
     skills: [
       'Desktop Application Development',
@@ -494,19 +488,16 @@ const openTab = (index) => {
   activeTab.value = index
 }
 
-// Tampilkan notifikasi saat halaman load
 onMounted(() => {
   setTimeout(() => {
     showNotification.value = true
     
-    // Auto close setelah 10 detik
     setTimeout(() => {
       showNotification.value = false
     }, 10000)
   }, 2000)
 })
 
-// Handle search ketika user tekan Enter
 const handleSearch = (event) => {
   const query = event.target.value.toLowerCase().trim()
   
@@ -519,7 +510,6 @@ const handleSearch = (event) => {
   }
 }
 
-// Function untuk download CV
 const downloadCV = () => {
   const link = document.createElement('a')
   link.href = '/CV_Afwan_Apriansyah_.pdf'
@@ -533,6 +523,7 @@ const downloadCV = () => {
 </script>
 
 <style scoped>
+/* Mobile Styles */
 
 /* Modal Fade Transition */
 .modal-fade-enter-active,
@@ -566,16 +557,39 @@ const downloadCV = () => {
 .notification-popup {
   position: fixed;
   bottom: 20px;
-  left: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   background: white;
   border-radius: 8px;
-  padding: 16px 20px;
+  padding: 12px 16px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
+  max-width: calc(100% - 40px);
+  width: 320px;
   z-index: 2000;
   display: flex;
   align-items: center;
   gap: 12px;
+  overflow: hidden;
+}
+
+.notification-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #4285f4, #1a73e8);
+  width: 100%;
+  animation: progressBar 10s linear forwards;
+  border-radius: 16px 0 8px 8px;
+}
+
+@keyframes progressBar {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
 }
 
 .slide-enter-active,
@@ -584,18 +598,18 @@ const downloadCV = () => {
 }
 
 .slide-enter-from {
-  transform: translateY(100px);
+  transform: translate(-50%, 100px);
   opacity: 0;
 }
 
 .slide-leave-to {
-  transform: translateY(100px);
+  transform: translate(-50%, 100px);
   opacity: 0;
 }
 
 .notification-icon {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   flex-shrink: 0;
   filter: brightness(0) saturate(100%) invert(42%) sepia(93%) saturate(1352%) hue-rotate(202deg) brightness(97%) contrast(96%);
 }
@@ -605,14 +619,14 @@ const downloadCV = () => {
 }
 
 .notification-title {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
   color: #202124;
   margin-bottom: 4px;
 }
 
 .notification-message {
-  font-size: 13px;
+  font-size: 12px;
   color: #5f6368;
   line-height: 1.4;
 }
@@ -635,8 +649,8 @@ const downloadCV = () => {
 }
 
 .notification-close img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   filter: brightness(0) saturate(100%) opacity(0.6);
 }
 
@@ -647,7 +661,7 @@ const downloadCV = () => {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 .background-overlay {
@@ -665,21 +679,22 @@ const downloadCV = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 80px 20px 40px;
+  padding: 60px 15px 40px;
 }
 
 .logo {
-  height: 265px;
+  height: 180px;
   width: 100%;
-  max-width: 265px;
-  margin-top: -50px;
+  max-width: 180px;
+  margin-top: -30px;
+  margin-bottom: -35px;
 }
 
 .search-container {
   width: 100%;
-  max-width: 672px;
-  margin-top: -60px;
-  margin-bottom: 30px;
+  max-width: 550px;
+  margin-bottom: 25px;
+  padding: 0 10px;
 }
 
 .search-bar {
@@ -687,7 +702,7 @@ const downloadCV = () => {
   align-items: center;
   background: rgb(255, 255, 255);
   border-radius: 30px;
-  padding: 6.5px 10px;
+  padding: 5px 8px;
   transition: box-shadow 0.2s;
 }
 
@@ -699,14 +714,14 @@ const downloadCV = () => {
   background: none;
   border: none;
   cursor: pointer;
-  margin-right: 12px;
-  margin-left: -4px;
-  padding: 8px;
+  margin-right: 8px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
   transition: background 0.2s;
+  flex-shrink: 0;
 }
 
 .search-icon:hover {
@@ -714,8 +729,8 @@ const downloadCV = () => {
 }
 
 .search-icon img {
-  width: 22px;
-  height: 22px;
+  width: 18px;
+  height: 18px;
   filter: brightness(0) saturate(100%);
 }
 
@@ -723,29 +738,30 @@ const downloadCV = () => {
   flex: 1;
   border: none;
   outline: none;
-  font-size: 16px;
+  font-size: 14px;
   background: transparent;
   color: #333333;
   font-family: 'Segoe UI', Tahoma, sans-serif;
-  margin-left: -6px;
-  margin-bottom: 2px;
+  min-width: 0;
 }
 
 .search-input::placeholder {
   color: #999999d3;
+  font-size: 13px;
 }
 
 .search-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 4px;
+  flex-shrink: 0;
 }
 
 .action-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 1px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -758,17 +774,17 @@ const downloadCV = () => {
 }
 
 .action-btn img {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   filter: brightness(0) saturate(100%);
 }
 
 .ai-mode-btn {
   background: rgb(243, 246, 246);
   border: 2px solid transparent;
-  padding: 8px 12px 8px 8px;
+  padding: 6px 10px 6px 6px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
@@ -779,6 +795,7 @@ const downloadCV = () => {
   z-index: 1;
   background-clip: padding-box;
   font-family: 'Segoe UI', Tahoma, sans-serif;
+  white-space: nowrap;
 }
 
 .ai-mode-btn::before {
@@ -819,17 +836,22 @@ const downloadCV = () => {
 }
 
 .ai-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   filter: brightness(0) saturate(100%);
+  flex-shrink: 0;
+}
+
+.ai-text {
+  display: none;
 }
 
 .shortcuts {
   display: flex;
-  gap: 55px;
+  gap: 35px;
   justify-content: center;
   max-width: 1000px;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .shortcut-item {
@@ -847,8 +869,8 @@ const downloadCV = () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 80px;
-  height: 80px;
+  width: 70px;
+  height: 70px;
   background: rgba(255, 255, 255, 0.152);
   border-radius: 8px;
   opacity: 0;
@@ -861,26 +883,26 @@ const downloadCV = () => {
 }
 
 .shortcut-icon {
-  width: 44px;
-  height: 44px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   background: rgba(228, 226, 227, 1.00);
   position: relative;
   z-index: 1;
 }
 
 .shortcut-icon img {
-  width: 23px;
-  height: 23px;
+  width: 20px;
+  height: 20px;
   object-fit: contain;
 }
 
 .shortcut-label {
-  font-size: 13px;
+  font-size: 12px;
   color: #ffffff;
   text-align: center;
   text-shadow: 0 1px 2px rgba(0,0,0,0.5);
@@ -890,10 +912,10 @@ const downloadCV = () => {
 
 .customize-btn {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
-  width: 32px;
-  height: 32px;
+  bottom: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.581);
   border: none;
@@ -910,8 +932,8 @@ const downloadCV = () => {
 }
 
 .customize-btn img {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
 }
 
 /* Header Navigation */
@@ -921,64 +943,33 @@ const downloadCV = () => {
   right: 0;
   display: flex;
   align-items: center;
-  gap: 15px;
-  padding: 15px 20px;
+  gap: 8px;
+  padding: 10px 12px;
   z-index: 100;
 }
 
 .nav-links {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-}
-
-.nav-link {
-  color: rgba(255, 255, 255, 0.959);
-  text-decoration: none;
-  font-size: 13px;
-  font-family: arial, sans-serif;
-  transition: opacity 0.2s;
-  position: relative;
-}
-
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.959);
-  transform: scaleX(0);
-  transition: transform 0.2s ease;
-}
-
-.nav-link:hover::after {
-  transform: scaleX(1);
-}
-
-.nav-link:hover {
-  opacity: 1;
+  display: none;
 }
 
 .nav-icons {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .nav-icon-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
 }
 
 .nav-icon-btn:hover {
@@ -986,14 +977,14 @@ const downloadCV = () => {
 }
 
 .lab-btn img {
-  width: 17px;
-  height: 17px;
+  width: 15px;
+  height: 15px;
   filter: brightness(0) saturate(100%) invert(100%);
 }
 
 .app-btn img {
-  width: 25px;
-  height: 25px;
+  width: 22px;
+  height: 22px;
   filter: brightness(0) saturate(100%) invert(100%);
 }
 
@@ -1002,8 +993,8 @@ const downloadCV = () => {
   border: none;
   cursor: pointer;
   padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   overflow: visible;
   transition: all 0.2s;
@@ -1016,8 +1007,8 @@ const downloadCV = () => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   background: rgba(255, 255, 255, 0.15);
   border-radius: 50%;
   opacity: 0;
@@ -1027,8 +1018,8 @@ const downloadCV = () => {
 
 .profile-btn:hover::before,
 .profile-btn.active::before {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   opacity: 1;
 }
 
@@ -1050,16 +1041,16 @@ const downloadCV = () => {
   bottom: 0;
   z-index: 1000;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: flex-start;
-  padding: 60px 20px 20px;
+  padding: 55px 15px 15px;
 }
 
 .modal-content {
   background: rgb(235, 238, 241);
   border-radius: 16px;
   width: 100%;
-  max-width: 365px;
+  max-width: 340px;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
   overflow: hidden;
 }
@@ -1069,12 +1060,12 @@ const downloadCV = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 12px 20px;
+  padding: 10px 16px;
   border-bottom: none;
 }
 
 .modal-email {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   color: #202124;
   text-align: center;
@@ -1084,15 +1075,15 @@ const downloadCV = () => {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  margin: -8px;
+  margin: -6px;
   position: absolute;
-  right: 16px;
+  right: 12px;
 }
 
 .close-btn:hover {
@@ -1100,13 +1091,13 @@ const downloadCV = () => {
 }
 
 .close-btn img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   filter: brightness(0) saturate(100%) opacity(0.6);
 }
 
 .modal-body {
-  padding: 24px 20px 28px;
+  padding: 20px 16px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1116,14 +1107,14 @@ const downloadCV = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .profile-photo {
   position: relative;
-  width: 75px;
-  height: 75px;
-  margin-bottom: 16px;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 14px;
 }
 
 .profile-photo img {
@@ -1140,8 +1131,8 @@ const downloadCV = () => {
   background: white;
   border: 2px solid white;
   border-radius: 50%;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1155,13 +1146,13 @@ const downloadCV = () => {
 }
 
 .photo-edit-btn img {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   filter: brightness(0) saturate(100%);
 }
 
 .profile-name {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 400;
   line-height: 0.5rem;
   color: #202124;
@@ -1173,8 +1164,8 @@ const downloadCV = () => {
   background: rgb(235, 238, 241);
   border: 1px solid #797979;
   border-radius: 24px;
-  padding: 9px 24px ;
-  font-size: 13px;
+  padding: 8px 20px;
+  font-size: 12px;
   color: #055bcc;
   font-weight: 500;
   cursor: pointer;
@@ -1200,14 +1191,15 @@ const downloadCV = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
+  overflow-y: auto;
 }
 
 .folder {
   margin: 0 auto;
-  max-width: 50rem;
   width: 100%;
-  max-height: 90vh;
+  max-width: 100%;
+  max-height: calc(100vh - 30px);
   overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -1218,32 +1210,34 @@ const downloadCV = () => {
 }
 
 .tabs {
-  padding: 2rem 0 0 0;
-  width: 100%;
-  margin: 0 2rem;
+  padding: 1.5rem 0 0 0;
+  width: calc(100% - 2rem);
+  margin: 0 1rem;
   overflow-x: auto;
-  width: calc(100% - 4rem);
   white-space: nowrap;
   scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 .tabs::-webkit-scrollbar {
   display: none;
+  height: 0;
 }
 
 .tab {
   font-family: 'Segoe UI', Tahoma, sans-serif;
   line-height: 0.8;
   display: inline-block;
-  margin-left: -35px;
-  filter: drop-shadow(0px -3px 2px rgba(0, 0, 0, 0.05));
+  margin-left: -25px;
+  filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.05));
   border: none;
   border-radius: 6px 6px 0 0;
   position: relative;
-  margin-right: 4rem;
+  margin-right: 2rem;
   background: linear-gradient(to bottom, #fee9a5, #f9d877);
   white-space: nowrap;
   cursor: pointer;
+  font-size: 90%;
 }
 
 .tab:focus {
@@ -1256,12 +1250,12 @@ const downloadCV = () => {
 }
 
 .tab:first-of-type {
-  margin-left: 30px;
+  margin-left: 20px;
 }
 
 .tab div {
   background: linear-gradient(to bottom, #fee9a5, #f9d877);
-  padding: 6px 0;
+  padding: 5px 0;
   position: relative;
   z-index: 10;
 }
@@ -1269,13 +1263,13 @@ const downloadCV = () => {
 .tab span {
   display: inline-block;
   border: 2px solid transparent;
-  padding: 6px 15px 6px;
+  padding: 5px 12px 5px;
   border-radius: 5px;
   z-index: 5;
   position: relative;
-  font-size: 140%;
+  font-size: 120%;
   color: black;
-  min-width: 6rem;
+  min-width: 5rem;
 }
 
 .tab:before,
@@ -1284,34 +1278,26 @@ const downloadCV = () => {
   height: 100%;
   position: absolute;
   background: linear-gradient(to bottom, #fee9a5, #f9d877);
-  border-radius: 8px 8px 0 0;
-  width: 30px;
+  border-radius: 6px 6px 0 0;
+  width: 25px;
   top: 0;
 }
 
 .tab:before {
-  right: -16px;
+  right: -14px;
   transform: skew(25deg);
-  border-radius: 0 8px 0 0;
+  border-radius: 0 6px 0 0;
 }
 
 .tab:after {
   transform: skew(-25deg);
-  left: -16px;
-  border-radius: 8px 0 0 0;
+  left: -14px;
+  border-radius: 6px 0 0 0;
 }
 
 .tab.active {
   z-index: 50;
   position: relative;
-}
-
-.tab.active span {
-  background: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-  border: 2px solid #66676a;
-  border-radius: 5px;
-  color: black;
 }
 
 /* Green theme for PANDIGI tab */
@@ -1321,49 +1307,11 @@ const downloadCV = () => {
   background: linear-gradient(to bottom, #a8e6a1, #76c776);
 }
 
-.tab:nth-child(2).active span {
-  background: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-  border: 2px solid #4a934a;
-  color: black;
-}
-
-/* Progress Note */
-.progress-note {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 12px;
-  background: #fff3cd;
-  border: 1px solid #ffc107;
-  border-radius: 6px;
-  margin-bottom: 1.5rem;
-  font-size: 12px;
-  color: #856404;
-}
-
-.progress-icon {
-  font-size: 16px;
-  flex-shrink: 0;
-}
-
-.progress-text {
-  font-style: italic;
-  line-height: 1.4;
-}
-
 /* Blue theme for Car Rental tab */
 .tab:nth-child(3) div,
 .tab:nth-child(3):before,
 .tab:nth-child(3):after {
   background: linear-gradient(to bottom, #a1c9e6, #6ba5d6);
-}
-
-.tab:nth-child(3).active span {
-  background: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-  border: 2px solid #4a7a9a;
-  color: black;
 }
 
 .content-wrapper {
@@ -1376,7 +1324,7 @@ const downloadCV = () => {
   display: none;
   background: linear-gradient(to bottom, #f9d877, #fee9a5);
   border-radius: 10px;
-  padding: 1rem;
+  padding: 0.8rem;
   filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.1));
   z-index: 5;
 }
@@ -1385,21 +1333,19 @@ const downloadCV = () => {
   display: block;
 }
 
-/* Warna hijau untuk tab Pandigi (tab ke-2) */
 .content__inner:nth-child(2).active {
   background: linear-gradient(to bottom, #76c776, #a8e6a1) !important;
 }
 
-/* Warna biru untuk tab Car Rental (tab ke-3) */
 .content__inner:nth-child(3).active {
   background: linear-gradient(to bottom, #6ba5d6, #a1c9e6) !important;
 }
 
 .page {
-  padding: 1.5rem;
+  padding: 1rem;
   border-radius: 2px;
-  min-height: 20rem;
-  line-height: 160%;
+  min-height: 15rem;
+  line-height: 150%;
   background-color: #f9f9f9;
   filter: drop-shadow(0px 1px 3px rgba(0, 0, 0, 0.15));
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -1408,20 +1354,19 @@ const downloadCV = () => {
 /* Project Gallery Grid */
 .project-gallery {
   display: flex;
-  gap: 12px;
-  margin-bottom: 1.5rem;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem;
 }
 
 .gallery-main {
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 6px;
   overflow: hidden;
   background: #e0e0e0;
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  height: 140px;
   transition: transform 0.2s;
-  flex-shrink: 0;
   border: 2px solid #66676a;
 }
 
@@ -1432,16 +1377,15 @@ const downloadCV = () => {
 }
 
 .gallery-more {
-  width: 200px;
-  height: 150px;
+  width: 100%;
+  height: 100px;
   background: #e0e0e0;
-  border-radius: 8px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s;
-  flex-shrink: 0;
   position: relative;
   overflow: hidden;
   border: 2px solid #66676a;
@@ -1461,7 +1405,7 @@ const downloadCV = () => {
 }
 
 .more-text {
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 500;
   color: rgb(243, 240, 240);
   font-family: 'Segoe UI', Tahoma, sans-serif;
@@ -1472,75 +1416,69 @@ const downloadCV = () => {
 
 /* Project Overview */
 .project-overview {
-  margin-bottom: 1.5rem;
-  padding: 16px;
+  margin-bottom: 1rem;
+  padding: 12px;
   background: white;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #e0e0e0;
 }
 
 .overview-header {
   display: flex;
   align-items: center;
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 }
 
 .role-badge {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   background: #dadadb;
   color: #3a3939;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 11px;
   font-weight: 500;
-}
-
-.role-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #686e78;
 }
 
 .overview-text {
   margin: 0;
   color: #5f6368;
-  font-size: 14px;
-  line-height: 1.6;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: justify;
 }
 
 /* Skills & Competencies */
 .project-skills {
-  margin-bottom: 1.5rem;
-  padding: 16px;
+  margin-bottom: 1rem;
+  padding: 12px;
   background: white;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #e0e0e0;
 }
 
 .skills-header {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   color: #202124;
-  margin-bottom: 12px;
-  padding-bottom: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
   border-bottom: 2px solid #e8f0fe;
 }
 
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  grid-template-columns: 1fr;
+  gap: 8px;
 }
 
 .skill-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 8px;
-  border-radius: 6px;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 4px;
   transition: background 0.2s;
 }
 
@@ -1549,17 +1487,17 @@ const downloadCV = () => {
 }
 
 .skill-check {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   flex-shrink: 0;
   filter: brightness(0) saturate(100%);
 }
 
 .skill-item span {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 500;
   color: #3c4043;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 /* Project Tools */
@@ -1571,55 +1509,54 @@ const downloadCV = () => {
   display: block;
   margin-bottom: 0.5rem;
   color: #333;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .tools-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .tool-badge {
   background: white;
   color: #333;
-  padding: 6px 12px;
-  border-radius: 16px;
-  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 11px;
   font-weight: 500;
   font-family: 'Segoe UI', Tahoma, sans-serif;
   border: 1px solid #ddd;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
 }
 
 .tool-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 /* GitHub Repositories */
 .project-repos {
-  margin-top: 1.5rem;
+  margin-top: 1rem;
   display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .repo-card {
   background: white;
   border: 1px solid #d0d7de;
   border-radius: 6px;
-  padding: 16px;
+  padding: 12px;
   text-decoration: none;
   color: inherit;
   transition: all 0.2s;
-  flex: 1;
-  min-width: 250px;
-  max-width: 48%;
+  width: 100%;
 }
 
 .repo-card[href="#"] {
@@ -1640,44 +1577,50 @@ const downloadCV = () => {
 .repo-header {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .repo-icon {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
   filter: brightness(0) saturate(100%) opacity(1);
+  flex-shrink: 0;
 }
 
 .repo-name {
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .repo-badge {
-  font-size: 12px;
+  font-size: 10px;
   color: #3b3d41;
   border: 1px solid #c6c8cb;
-  border-radius: 17px;
-  padding: 0px 10px;
+  border-radius: 15px;
+  padding: 0px 8px;
   font-weight: 500;
+  flex-shrink: 0;
 }
 
 .repo-language {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 12px;
+  gap: 5px;
+  font-size: 11px;
   color: #57606a;
 }
 
 .language-dot {
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   display: inline-block;
+  flex-shrink: 0;
 }
 
 .language-name {
@@ -1692,18 +1635,18 @@ const downloadCV = () => {
 
 .sleeping-cat {
   position: absolute;
-  top: -54px;
-  right: 33px;
+  top: -44px;
+  right: 20px;
   z-index: 10;
   pointer-events: none;
   font-family: 'Sour Gummy', sans-serif;
 }
 
 .sleep-symbol {
-  margin-left: -12px;
-  margin-bottom: 10px;
+  margin-left: -10px;
+  margin-bottom: 8px;
   font-weight: 600;
-  font-size: 19px;
+  font-size: 16px;
   color: #666;
 }
 
@@ -1721,20 +1664,19 @@ const downloadCV = () => {
 
 .sleep-symbol span:nth-child(2) {
   animation-delay: 1s;
-  margin-left: -5px;
+  margin-left: -4px;
 }
 
 .sleep-symbol span:nth-child(3) {
   animation-delay: 2s;
-  margin-left: -5px;
+  margin-left: -4px;
 }
 
 .cat-svg {
-  transform: scale(2.5);
+  transform: scale(2);
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
 }
 
-/* Cat wakes up on hover */
 .repo-card.has-cat:hover .sleep-symbol {
   opacity: 0;
   transition: opacity 0.3s;
@@ -1749,12 +1691,10 @@ const downloadCV = () => {
   visibility: visible;
 }
 
-/* Default eye state */
 .cat-svg #eyesdown {
   visibility: hidden;
 }
 
-/* Sleep animation */
 @keyframes sleep {
   0% {
     opacity: 1;
@@ -1762,11 +1702,11 @@ const downloadCV = () => {
   }
   50% {
     opacity: 0.5;
-    transform: translate(-3px, -20px) scale(1.2);
+    transform: translate(-2px, -16px) scale(1.2);
   }
   100% {
     opacity: 0;
-    transform: translateY(-35px) scale(1.5);
+    transform: translateY(-28px) scale(1.5);
   }
 }
 
@@ -1782,31 +1722,31 @@ const downloadCV = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 20px;
+  padding: 15px;
 }
 
 .lightbox-content {
-  max-width: 90vw;
-  max-height: 90vh;
+  max-width: 100%;
+  max-height: 100%;
   position: relative;
 }
 
 .lightbox-content img {
   max-width: 100%;
-  max-height: 90vh;
+  max-height: calc(100vh - 100px);
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 6px;
 }
 
 .lightbox-close {
   position: absolute;
-  top: 20px;
-  right: 20px;
-  background: none;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1820,8 +1760,8 @@ const downloadCV = () => {
 }
 
 .lightbox-close img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   filter: brightness(0) saturate(100%) invert(1);
 }
 
@@ -1829,18 +1769,18 @@ const downloadCV = () => {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: none;
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   cursor: pointer;
   z-index: 3001;
   transition: background 0.2s;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 8px;
+  padding: 6px;
 }
 
 .lightbox-nav:hover {
@@ -1848,25 +1788,26 @@ const downloadCV = () => {
 }
 
 .lightbox-nav img {
-  width: 24px;
-  height: 24px;
+  width: 20px;
+  height: 20px;
   filter: brightness(0) saturate(100%) invert(1);
 }
 
 .lightbox-nav.prev {
-  left: 20px;
+  left: 15px;
 }
 
 .lightbox-nav.next {
-  right: 20px;
+  right: 15px;
 }
 
 .lightbox-counter {
   position: absolute;
-  bottom: -30px;
+  bottom: -25px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 14px;
+  font-size: 12px;
+  color: white;
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
@@ -1876,18 +1817,19 @@ const downloadCV = () => {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 12px 20px;
+  padding: 8px 15px;
   text-align: center;
   z-index: 5;
   pointer-events: none;
 }
 
 .footer-text {
-  font-size: 11px;
+  font-size: 9px;
   color: rgba(255, 255, 255, 0.7);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   font-family: 'Segoe UI', Tahoma, sans-serif;
   pointer-events: auto;
+  line-height: 1.4;
 }
 
 .footer-text a {
@@ -1899,5 +1841,737 @@ const downloadCV = () => {
 .footer-text a:hover {
   color: #ffffff;
   text-decoration: underline;
+}
+
+/* Tablet Styles */
+@media (min-width: 768px) {
+  .content {
+    padding: 80px 20px 40px;
+  }
+
+  .logo {
+    height: 220px;
+    max-width: 220px;
+    margin-top: -40px;
+    margin-bottom: -50px;
+  }
+
+  .search-container {
+    max-width: 620px;
+    margin-bottom: 30px;
+  }
+
+  .search-bar {
+    padding: 6px 10px;
+  }
+
+  .search-input {
+    font-size: 15px;
+  }
+
+  .search-input::placeholder {
+    font-size: 14px;
+  }
+
+  .ai-mode-btn {
+    padding: 7px 11px 7px 7px;
+    font-size: 11px;
+  }
+
+  .ai-text {
+    display: inline;
+  }
+
+  .shortcuts {
+    gap: 45px;
+  }
+
+  .shortcut-icon {
+    width: 42px;
+    height: 42px;
+  }
+
+  .shortcut-icon img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .shortcut-label {
+    font-size: 13px;
+  }
+
+  .header-nav {
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .nav-link {
+    color: rgba(255, 255, 255, 0.959);
+    text-decoration: none;
+    font-size: 13px;
+    font-family: arial, sans-serif;
+    transition: opacity 0.2s;
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.959);
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .nav-icons {
+    gap: 6px;
+  }
+
+  .nav-icon-btn {
+    padding: 7px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .lab-btn img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .app-btn img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .profile-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .modal-content {
+    max-width: 355px;
+  }
+
+  .modal-email {
+    font-size: 13px;
+  }
+
+  .profile-name {
+    font-size: 19px;
+  }
+
+  .manage-account-btn {
+    padding: 8px 22px;
+    font-size: 13px;
+  }
+
+  /* Projects Modal Tablet */
+  .folder {
+    max-width: 45rem;
+  }
+
+  .tabs {
+    margin: 0 1.5rem;
+    width: calc(100% - 3rem);
+  }
+
+  .tab {
+    margin-right: 3rem;
+    font-size: 95%;
+  }
+
+  .tab span {
+    font-size: 130%;
+    min-width: 5.5rem;
+  }
+
+  .content__inner {
+    padding: 1rem;
+  }
+
+  .page {
+    padding: 1.2rem;
+    min-height: 18rem;
+  }
+
+  .project-gallery {
+    flex-direction: row;
+    gap: 12px;
+  }
+
+  .gallery-main {
+    width: 180px;
+    height: 135px;
+  }
+
+  .gallery-more {
+    width: 180px;
+    height: 135px;
+  }
+
+  .more-text {
+    font-size: 1.5rem;
+  }
+
+  .project-overview,
+  .project-skills {
+    padding: 14px;
+  }
+
+  .overview-text {
+    font-size: 13px;
+  }
+
+  .skills-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .skill-item span {
+    font-size: 12px;
+  }
+
+  .project-repos {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .repo-card {
+    flex: 1;
+    min-width: calc(50% - 6px);
+    max-width: calc(50% - 6px);
+    padding: 14px;
+  }
+
+  .repo-name {
+    font-size: 13px;
+  }
+
+  .repo-language {
+    font-size: 12px;
+  }
+
+  .sleeping-cat {
+    top: -48px;
+    right: 28px;
+  }
+
+  .sleep-symbol {
+    font-size: 17px;
+  }
+
+  .cat-svg {
+    transform: scale(2.2);
+  }
+
+  .notification-popup {
+    left: 20px;
+    transform: none;
+    width: 380px;
+  }
+
+  .slide-enter-from {
+    transform: translateY(100px);
+  }
+
+  .slide-leave-to {
+    transform: translateY(100px);
+  }
+
+  .footer-text {
+    font-size: 10px;
+  }
+}
+
+/* Desktop Styles */
+@media (min-width: 1024px) {
+  .content {
+    padding: 80px 20px 40px;
+  }
+
+  .logo {
+    height: 265px;
+    max-width: 265px;
+    margin-top: -50px;
+    margin-bottom: -60px;
+  }
+
+  .search-container {
+    max-width: 672px;
+  }
+
+  .search-bar {
+    padding: 6.5px 10px;
+  }
+
+  .search-icon {
+    margin-right: 12px;
+    margin-left: -4px;
+    padding: 8px;
+  }
+
+  .search-icon img {
+    width: 22px;
+    height: 22px;
+  }
+
+  .search-input {
+    font-size: 16px;
+    margin-left: -6px;
+    margin-bottom: 2px;
+  }
+
+  .search-input::placeholder {
+    font-size: 16px;
+  }
+
+  .search-actions {
+    gap: 12px;
+  }
+
+  .action-btn {
+    padding: 1px;
+  }
+
+  .action-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .ai-mode-btn {
+    padding: 8px 12px 8px 8px;
+    font-size: 12px;
+  }
+
+  .ai-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .shortcuts {
+    gap: 55px;
+    margin-bottom: 25px;
+  }
+
+  .shortcut-item::before {
+    width: 80px;
+    height: 80px;
+  }
+
+  .shortcut-icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .shortcut-icon img {
+    width: 23px;
+    height: 23px;
+  }
+
+  .customize-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .customize-btn img {
+    width: 17px;
+    height: 17px;
+  }
+
+  .header-nav {
+    gap: 15px;
+    padding: 15px 20px;
+  }
+
+  .nav-icon-btn {
+    padding: 8px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .lab-btn img {
+    width: 17px;
+    height: 17px;
+  }
+
+  .app-btn img {
+    width: 25px;
+    height: 25px;
+  }
+
+  .profile-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .profile-btn::before {
+    width: 32px;
+    height: 32px;
+  }
+
+  .profile-btn:hover::before,
+  .profile-btn.active::before {
+    width: 40px;
+    height: 40px;
+  }
+
+  .modal-overlay {
+    padding: 60px 20px 20px;
+    justify-content: flex-end;
+  }
+
+  .modal-content {
+    max-width: 365px;
+  }
+
+  .modal-header {
+    padding: 12px 20px;
+  }
+
+  .close-btn {
+    padding: 8px;
+    margin: -8px;
+    right: 16px;
+  }
+
+  .close-btn img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .modal-body {
+    padding: 24px 20px 28px;
+  }
+
+  .profile-photo {
+    width: 75px;
+    height: 75px;
+    margin-bottom: 16px;
+  }
+
+  .photo-edit-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .photo-edit-btn img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .profile-name {
+    font-size: 20px;
+  }
+
+  .manage-account-btn {
+    padding: 9px 24px;
+  }
+
+  /* Projects Modal Desktop */
+  .projects-modal-overlay {
+    padding: 20px;
+  }
+
+  .folder {
+    max-width: 50rem;
+  }
+
+  .tabs {
+    padding: 2rem 0 0 0;
+    margin: 0 2rem;
+    width: calc(100% - 4rem);
+  }
+
+  .tab {
+    margin-left: -35px;
+    margin-right: 4rem;
+    font-size: 100%;
+  }
+
+  .tab:first-of-type {
+    margin-left: 30px;
+  }
+
+  .tab div {
+    padding: 6px 0;
+  }
+
+  .tab span {
+    padding: 6px 15px 6px;
+    font-size: 140%;
+    min-width: 6rem;
+  }
+
+  .tab:before,
+  .tab:after {
+    width: 30px;
+  }
+
+  .tab:before {
+    right: -16px;
+  }
+
+  .tab:after {
+    left: -16px;
+  }
+
+  .content__inner {
+    padding: 1rem;
+  }
+
+  .page {
+    padding: 1.5rem;
+    min-height: 20rem;
+    line-height: 160%;
+  }
+
+  .project-gallery {
+    margin-bottom: 1.5rem;
+  }
+
+  .gallery-main {
+    width: 200px;
+    height: 150px;
+  }
+
+  .gallery-more {
+    width: 200px;
+    height: 150px;
+  }
+
+  .more-text {
+    font-size: 1.6rem;
+  }
+
+  .project-overview {
+    margin-bottom: 1.5rem;
+    padding: 16px;
+  }
+
+  .role-badge {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+
+  .overview-text {
+    font-size: 14px;
+  }
+
+  .project-skills {
+    margin-bottom: 1.5rem;
+    padding: 16px;
+  }
+
+  .skills-header {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .skills-grid {
+    gap: 12px;
+  }
+
+  .skill-item {
+    padding: 8px;
+  }
+
+  .skill-check {
+    width: 18px;
+    height: 18px;
+  }
+
+  .skill-item span {
+    font-size: 13px;
+  }
+
+  .project-tools strong {
+    font-size: 14px;
+  }
+
+  .tools-list {
+    gap: 8px;
+  }
+
+  .tool-badge {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .tool-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .project-repos {
+    margin-top: 1.5rem;
+  }
+
+  .repo-card {
+    padding: 16px;
+  }
+
+  .repo-header {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .repo-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .repo-name {
+    font-size: 14px;
+  }
+
+  .repo-badge {
+    font-size: 12px;
+  }
+
+  .repo-language {
+    gap: 6px;
+    font-size: 12px;
+  }
+
+  .language-dot {
+    width: 12px;
+    height: 12px;
+  }
+
+  .sleeping-cat {
+    top: -54px;
+    right: 33px;
+  }
+
+  .sleep-symbol {
+    margin-left: -12px;
+    margin-bottom: 10px;
+    font-size: 19px;
+  }
+
+  .sleep-symbol span:nth-child(2) {
+    margin-left: -5px;
+  }
+
+  .sleep-symbol span:nth-child(3) {
+    margin-left: -5px;
+  }
+
+  .cat-svg {
+    transform: scale(2.5);
+  }
+
+  @keyframes sleep {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    50% {
+      opacity: 0.5;
+      transform: translate(-3px, -20px) scale(1.2);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-35px) scale(1.5);
+    }
+  }
+
+  .lightbox-overlay {
+    padding: 20px;
+  }
+
+  .lightbox-content img {
+    max-height: 90vh;
+  }
+
+  .lightbox-close {
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .lightbox-close img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .lightbox-nav {
+    width: 48px;
+    height: 48px;
+    padding: 8px;
+  }
+
+  .lightbox-nav img {
+    width: 24px;
+    height: 24px;
+  }
+
+  .lightbox-nav.prev {
+    left: 20px;
+  }
+
+  .lightbox-nav.next {
+    right: 20px;
+  }
+
+  .lightbox-counter {
+    bottom: -30px;
+    font-size: 14px;
+  }
+
+  .notification-popup {
+    max-width: 400px;
+    padding: 16px 20px;
+  }
+
+  .notification-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .notification-title {
+    font-size: 14px;
+  }
+
+  .notification-message {
+    font-size: 13px;
+  }
+
+  .notification-close img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .footer {
+    padding: 12px 20px;
+  }
+
+  .footer-text {
+    font-size: 11px;
+  }
+}
+
+/* Large Desktop Styles */
+@media (min-width: 1440px) {
+  .shortcuts {
+    gap: 65px;
+  }
 }
 </style>
