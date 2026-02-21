@@ -150,7 +150,11 @@
                 <!-- Project Overview -->
                 <div class="project-overview">
                   <div class="overview-header">
-                    <div class="role-badge">
+                    <div class="role-badge"
+                      :style="{ backgroundColor: currentBadgeColor.bg, color: currentBadgeColor.text }"
+                      @mouseenter="randomizeBadgeColor"
+                      @mouseleave="resetBadgeColor"
+                    >
                       {{ tab.role }}
                     </div>
                   </div>
@@ -165,6 +169,8 @@
                       v-for="(skill, skillIndex) in tab.skills" 
                       :key="skillIndex"
                       class="skill-item"
+                      :class="{ 'skill-active': isSkillActive(tab.name, skillIndex) }"
+                      @mouseenter="toggleSkill(tab.name, skillIndex)"
                     >
                       <img :src="checkIcon" alt="Check" class="skill-check" />
                       <span>{{ skill }}</span>
@@ -180,6 +186,8 @@
                       v-for="(tool, toolIndex) in tab.tools" 
                       :key="toolIndex" 
                       class="tool-badge"
+                      @mouseenter="$event.currentTarget.style.backgroundColor = getToolColor(tool) + '22'; $event.currentTarget.style.borderColor = getToolColor(tool)"
+                      @mouseleave="$event.currentTarget.style.backgroundColor = ''; $event.currentTarget.style.borderColor = ''"
                     >
                       <span class="tool-dot" :style="{ backgroundColor: getToolColor(tool) }"></span>
                       {{ tool }}
@@ -189,7 +197,7 @@
 
                 <!-- GitHub Repositories -->
                 <div v-if="tab.repos" class="project-repos">
-                  <a 
+                  <div 
                     v-for="(repo, repoIndex) in tab.repos" 
                     :key="repoIndex"
                     :href="repo.isPrivate ? '#' : repo.url"
@@ -254,14 +262,20 @@
                     </div>
                     <div class="repo-header">
                       <img :src="githubIcon" alt="GitHub" class="repo-icon" />
-                      <span class="repo-name">{{ repo.name }}</span>
+                      <a 
+                        class="repo-name" 
+                        style="margin-right: auto;"
+                        :href="repo.isPrivate ? '#' : repo.url"
+                        :target="repo.isPrivate ? '_self' : '_blank'" 
+                        @click="repo.isPrivate ? $$event.preventDefault() : null"
+                      >{{ repo.name }}</a>
                       <span class="repo-badge">{{ repo.isPrivate ? 'Private' : 'Public' }}</span>
                     </div>
                     <div class="repo-language">
                       <span class="language-dot" :style="{ backgroundColor: getToolColor(repo.language) }"></span>
                       <span class="language-name">{{ repo.language }}</span>
                     </div>
-                  </a>
+                  </div>
                 </div>
               </div>
             </div>
@@ -364,6 +378,7 @@ const showModal = ref(false)
 const showNotification = ref(false)
 const showProjectsModal = ref(false)
 const activeTab = ref(0)
+const activeSkills = ref({})
 
 const showLightbox = ref(false)
 const currentImageIndex = ref(0)
@@ -382,6 +397,24 @@ const toolColors = {
   'Java': '#b07219',
   'JavaScript': '#f7df1e',
   'TypeScript': '#3178c6'
+}
+
+const badgeColors = [
+  { bg: '#e8f5e9', text: '#2e7d32' },
+  { bg: '#e3f2fd', text: '#1565c0' },
+  { bg: '#fce4ec', text: '#c62828' },
+  { bg: '#fff8e1', text: '#f57f17' },
+  { bg: '#f3e5f5', text: '#6a1b9a' },
+  { bg: '#e0f7fa', text: '#00695c' },
+]
+const currentBadgeColor = ref({ bg: '#dadadb', text: '#3a3939' })
+
+const randomizeBadgeColor = () => {
+  const pick = badgeColors[Math.floor(Math.random() * badgeColors.length)]
+  currentBadgeColor.value = pick
+}
+const resetBadgeColor = () => {
+  currentBadgeColor.value = { bg: '#dadadb', text: '#3a3939' }
 }
 
 const getToolColor = (tool) => {
@@ -416,12 +449,10 @@ const projectTabs = ref([
     overview: 'A statistical analysis tool designed for students to simplify complex calculations in Bivariate Pearson Correlation and One-Way ANOVA methods, featuring automated computation and clean data visualization.',
     role: 'Full Stack Developer',
     skills: [
-      'Full-Stack Development',
+      'User-Friendly Interface Design',
       'RESTful API',
-      'Database Management',
-      'Component-Based Architecture',
+      'Database Design & Management',
       'Form Validation & State Management',
-      'CI/CD Implementation'
     ],
     tools: ['Angular', 'Spring Boot', 'MySQL Workbench', 'Docker'],
     repos: [
@@ -432,15 +463,15 @@ const projectTabs = ref([
   {
     name: 'Pandigi',
     images: [pandigi1, pandigi2, pandigi3, pandigi4, pandigi5, pandigi6],
-    overview: 'A comprehensive client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
+    overview: 'A comprehensive client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, caching, rate limiting, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
     role: 'Full Stack Developer',
     skills: [
-      'AI/ML Integration',
-      'Real-time Notifications',
-      'Full-stack Development',
+      'Responsive UI/UX Design',
+      'RESTful API',
+      'Database Design & Management',
       'JWT Authentication & Authorization',
-      'Containerization',
-      'Advanced Database Design'
+      'Message Broker & Cache Integration',
+      'AI/ML Implementation'
     ],
     tools: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker', 'RabbitMQ'],
     repos: [
@@ -455,11 +486,8 @@ const projectTabs = ref([
     role: 'Backend Developer',
     skills: [
       'Desktop Application Development',
-      'Spring Boot Framework',
-      'JPA/Hibernate ORM',
-      'Database Design & Management',
-      'Swing GUI Development',
-      'CRUD Operations'
+      'CRUD Operations',
+      'Database Design & Management'
     ],
     tools: ['Spring Boot', 'PostgreSQL'],
     repos: [
@@ -479,10 +507,21 @@ const closeNotification = () => {
 const closeProjectsModal = () => {
   showProjectsModal.value = false
   activeTab.value = 0
+  activeSkills.value = {}
 }
 
 const openTab = (index) => {
   activeTab.value = index
+  activeSkills.value = {}
+}
+
+const toggleSkill = (tabName, skillIndex) => {
+  const key = `${tabName}-${skillIndex}`
+  activeSkills.value[key] = true
+}
+
+const isSkillActive = (tabName, skillIndex) => {
+  return activeSkills.value[`${tabName}-${skillIndex}`] || false
 }
 
 onMounted(() => {
@@ -1408,6 +1447,50 @@ const downloadCV = () => {
   border-radius: 14px;
   font-size: 11px;
   font-weight: 500;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: background 0.4s, color 0.4s;
+}
+
+.role-badge::before {
+  content: '';
+  display: block;
+  position: absolute;
+  background: rgba(255,255,255,0.9);
+  width: 80px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  opacity: 0.5;
+  filter: blur(15px);
+  transform: translateX(-100px) skewX(-15deg);
+}
+
+.role-badge::after {
+  content: '';
+  display: block;
+  position: absolute;
+  background: rgba(255,255,255,0.7);
+  width: 30px;
+  height: 100%;
+  left: 30px;
+  top: 0;
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateX(-100px) skewX(-15deg);
+}
+
+.role-badge:hover::before {
+  transform: translateX(300px) skewX(-15deg);
+  opacity: 0.6;
+  transition: 0.7s;
+}
+
+.role-badge:hover::after {
+  transform: translateX(300px) skewX(-15deg);
+  opacity: 1;
+  transition: 0.7s;
 }
 
 .overview-text {
@@ -1450,7 +1533,20 @@ const downloadCV = () => {
   transition: background 0.2s;
 }
 
-.skill-item:hover { background: #f8f9fa; }
+.skill-item:hover,
+.skill-item.skill-active {
+  background: #f0faf0;
+}
+
+.skill-item:hover .skill-check,
+.skill-item.skill-active .skill-check {
+  filter: brightness(0) saturate(100%) invert(55%) sepia(60%) saturate(400%) hue-rotate(95deg) brightness(95%);
+}
+
+.skill-item:hover span,
+.skill-item.skill-active span {
+  color: #34a853;
+}
 
 .skill-check {
   width: 16px;
@@ -1493,6 +1589,29 @@ const downloadCV = () => {
   display: flex;
   align-items: center;
   gap: 5px;
+  position: relative;
+  overflow: hidden;
+  cursor: default;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.tool-badge::before {
+  content: '';
+  position: absolute;
+  background: rgba(255,255,255,0.95);
+  width: 50px;
+  height: 100%;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateX(-100px) skewX(-15deg);
+}
+
+.tool-badge:hover::before {
+  transform: translateX(200px) skewX(-15deg);
+  opacity: 0.7;
+  transition: 0.6s;
 }
 
 .tool-dot {
@@ -1557,6 +1676,20 @@ const downloadCV = () => {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+a.repo-name {
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: fit-content;
+}
+
+a.repo-name:hover {
+  text-decoration: underline;
+  color: #0969da;
 }
 
 .repo-badge {
