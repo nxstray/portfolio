@@ -1,6 +1,9 @@
 <template>
-  <div class="homepage" :style="{ backgroundImage: `url(${akaza})` }">
-    <!-- Background dengan efek -->
+  <div class="homepage">
+    <!-- Particle Background Animation -->
+    <ParticleBackground />
+
+    <!-- Background overlay (subtle, for white bg) -->
     <div class="background-overlay"></div>
     
     <!-- Header Navigation -->
@@ -317,7 +320,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import akaza from '@/assets/main/akaza.png'
+import ParticleBackground from '@/components/ParticleBackground.vue'
+
 import googleLogo from '@/assets/main/google.png'
 import profileImg from '@/assets/main/profile.jpg'
 
@@ -351,13 +355,6 @@ import pandigi3 from '@/assets/contents/pandigi-3.png'
 import pandigi4 from '@/assets/contents/pandigi-4.png'
 import pandigi5 from '@/assets/contents/pandigi-5.png'
 import pandigi6 from '@/assets/contents/pandigi-6.png'
-import pandigi7 from '@/assets/contents/pandigi-7.png'
-import pandigi8 from '@/assets/contents/pandigi-8.png'
-import pandigi9 from '@/assets/contents/pandigi-9.png'
-import pandigi10 from '@/assets/contents/pandigi-10.png'
-import pandigi11 from '@/assets/contents/pandigi-11.png'
-import pandigi12 from '@/assets/contents/pandigi-12.png'
-import pandigi13 from '@/assets/contents/pandigi-13.png'
 
 import carrental1 from '@/assets/contents/carrental-1.png'
 import carrental2 from '@/assets/contents/carrental-2.png'
@@ -434,7 +431,7 @@ const projectTabs = ref([
   },
   {
     name: 'Pandigi',
-    images: [pandigi1, pandigi2, pandigi3, pandigi4, pandigi5, pandigi6, pandigi7, pandigi8, pandigi9, pandigi10, pandigi11, pandigi12, pandigi13],
+    images: [pandigi1, pandigi2, pandigi3, pandigi4, pandigi5, pandigi6],
     overview: 'A comprehensive client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
     role: 'Full Stack Developer',
     skills: [
@@ -584,12 +581,8 @@ const downloadCV = () => {
 }
 
 @keyframes progressBar {
-  from {
-    width: 100%;
-  }
-  to {
-    width: 0%;
-  }
+  from { width: 100%; }
+  to { width: 0%; }
 }
 
 .slide-enter-active,
@@ -658,9 +651,7 @@ const downloadCV = () => {
   position: relative;
   width: 100%;
   min-height: 100vh;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background-color: #ffffff;
   overflow-x: hidden;
 }
 
@@ -683,11 +674,10 @@ const downloadCV = () => {
 }
 
 .logo {
-  height: 180px;
-  width: 100%;
-  max-width: 180px;
-  margin-top: -30px;
-  margin-bottom: -35px;
+  height: 100px !important;
+  max-width: 400px !important;
+  margin-top: 30px !important;
+  margin-bottom: 50px !important;
 }
 
 .search-container {
@@ -703,11 +693,13 @@ const downloadCV = () => {
   background: rgb(255, 255, 255);
   border-radius: 30px;
   padding: 5px 8px;
+  border: 1px solid #dfe1e5;
   transition: box-shadow 0.2s;
 }
 
 .search-bar:hover {
   box-shadow: 0 1px 6px rgba(32, 33, 36, 0.28);
+  border-color: rgba(223, 225, 229, 0);
 }
 
 .search-icon {
@@ -803,14 +795,7 @@ const downloadCV = () => {
   position: absolute;
   inset: -2px;
   border-radius: 18px;
-  background: linear-gradient(
-    90deg,
-    #4285f4 0%,
-    #ea4335 25%,
-    #fbbc04 50%,
-    #34a853 75%,
-    #4285f4 100%
-  );
+  background: linear-gradient(90deg, #4285f4 0%, #ea4335 25%, #fbbc04 50%, #34a853 75%, #4285f4 100%);
   background-size: 200% 100%;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -827,12 +812,8 @@ const downloadCV = () => {
 }
 
 @keyframes flowBorder {
-  0% {
-    background-position: 0% 0%;
-  }
-  100% {
-    background-position: 200% 0%;
-  }
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
 }
 
 .ai-icon {
@@ -871,7 +852,7 @@ const downloadCV = () => {
   transform: translate(-50%, -50%);
   width: 70px;
   height: 70px;
-  background: rgba(255, 255, 255, 0.152);
+  background: rgba(0, 0, 0, 0.05);
   border-radius: 8px;
   opacity: 0;
   transition: opacity 0.2s;
@@ -903,9 +884,8 @@ const downloadCV = () => {
 
 .shortcut-label {
   font-size: 12px;
-  color: #ffffff;
+  color: #5f6368;
   text-align: center;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
   position: relative;
   z-index: 1;
 }
@@ -917,7 +897,7 @@ const downloadCV = () => {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.581);
+  background: rgba(0, 0, 0, 0.15);
   border: none;
   cursor: pointer;
   transition: background 0.2s;
@@ -928,12 +908,13 @@ const downloadCV = () => {
 }
 
 .customize-btn:hover {
-  background: rgba(0, 0, 0, 0.9);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 .customize-btn img {
   width: 15px;
   height: 15px;
+  filter: brightness(0) saturate(100%);
 }
 
 /* Header Navigation */
@@ -973,19 +954,19 @@ const downloadCV = () => {
 }
 
 .nav-icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.06);
 }
 
 .lab-btn img {
   width: 15px;
   height: 15px;
-  filter: brightness(0) saturate(100%) invert(100%);
+  filter: brightness(0) saturate(100%) opacity(0.7);
 }
 
 .app-btn img {
   width: 22px;
   height: 22px;
-  filter: brightness(0) saturate(100%) invert(100%);
+  filter: brightness(0) saturate(100%) opacity(0.7);
 }
 
 .profile-btn {
@@ -1009,7 +990,7 @@ const downloadCV = () => {
   transform: translate(-50%, -50%);
   width: 28px;
   height: 28px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.08);
   border-radius: 50%;
   opacity: 0;
   transition: all 0.3s ease;
@@ -1240,18 +1221,14 @@ const downloadCV = () => {
   font-size: 90%;
 }
 
-.tab:focus {
-  outline: none;
-}
+.tab:focus { outline: none; }
 
 .tab:focus span {
   border-bottom: 2px solid;
   border-radius: 0;
 }
 
-.tab:first-of-type {
-  margin-left: 20px;
-}
+.tab:first-of-type { margin-left: 20px; }
 
 .tab div {
   background: linear-gradient(to bottom, #fee9a5, #f9d877);
@@ -1300,14 +1277,12 @@ const downloadCV = () => {
   position: relative;
 }
 
-/* Green theme for PANDIGI tab */
 .tab:nth-child(2) div,
 .tab:nth-child(2):before,
 .tab:nth-child(2):after {
   background: linear-gradient(to bottom, #a8e6a1, #76c776);
 }
 
-/* Blue theme for Car Rental tab */
 .tab:nth-child(3) div,
 .tab:nth-child(3):before,
 .tab:nth-child(3):after {
@@ -1329,9 +1304,7 @@ const downloadCV = () => {
   z-index: 5;
 }
 
-.content__inner.active {
-  display: block;
-}
+.content__inner.active { display: block; }
 
 .content__inner:nth-child(2).active {
   background: linear-gradient(to bottom, #76c776, #a8e6a1) !important;
@@ -1351,7 +1324,6 @@ const downloadCV = () => {
   font-family: 'Segoe UI', Tahoma, sans-serif;
 }
 
-/* Project Gallery Grid */
 .project-gallery {
   display: flex;
   flex-direction: column;
@@ -1391,9 +1363,7 @@ const downloadCV = () => {
   border: 2px solid #66676a;
 }
 
-.gallery-more:hover {
-  background: #d0d0d0;
-}
+.gallery-more:hover { background: #d0d0d0; }
 
 .more-bg {
   position: absolute;
@@ -1414,7 +1384,6 @@ const downloadCV = () => {
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.237);
 }
 
-/* Project Overview */
 .project-overview {
   margin-bottom: 1rem;
   padding: 12px;
@@ -1449,7 +1418,6 @@ const downloadCV = () => {
   text-align: justify;
 }
 
-/* Skills & Competencies */
 .project-skills {
   margin-bottom: 1rem;
   padding: 12px;
@@ -1482,9 +1450,7 @@ const downloadCV = () => {
   transition: background 0.2s;
 }
 
-.skill-item:hover {
-  background: #f8f9fa;
-}
+.skill-item:hover { background: #f8f9fa; }
 
 .skill-check {
   width: 16px;
@@ -1500,10 +1466,7 @@ const downloadCV = () => {
   line-height: 1.3;
 }
 
-/* Project Tools */
-.project-tools {
-  margin-top: 1rem;
-}
+.project-tools { margin-top: 1rem; }
 
 .project-tools strong {
   display: block;
@@ -1540,7 +1503,6 @@ const downloadCV = () => {
   flex-shrink: 0;
 }
 
-/* GitHub Repositories */
 .project-repos {
   margin-top: 1rem;
   display: flex;
@@ -1623,11 +1585,9 @@ const downloadCV = () => {
   flex-shrink: 0;
 }
 
-.language-name {
-  font-weight: 400;
-}
+.language-name { font-weight: 400; }
 
-/* Sleeping Cat Animation */
+/* Sleeping Cat */
 .repo-card.has-cat {
   position: relative;
   overflow: visible;
@@ -1658,19 +1618,9 @@ const downloadCV = () => {
   animation: sleep 4s ease-in-out infinite;
 }
 
-.sleep-symbol span:nth-child(1) {
-  animation-delay: 0s;
-}
-
-.sleep-symbol span:nth-child(2) {
-  animation-delay: 1s;
-  margin-left: -4px;
-}
-
-.sleep-symbol span:nth-child(3) {
-  animation-delay: 2s;
-  margin-left: -4px;
-}
+.sleep-symbol span:nth-child(1) { animation-delay: 0s; }
+.sleep-symbol span:nth-child(2) { animation-delay: 1s; margin-left: -4px; }
+.sleep-symbol span:nth-child(3) { animation-delay: 2s; margin-left: -4px; }
 
 .cat-svg {
   transform: scale(2);
@@ -1691,23 +1641,12 @@ const downloadCV = () => {
   visibility: visible;
 }
 
-.cat-svg #eyesdown {
-  visibility: hidden;
-}
+.cat-svg #eyesdown { visibility: hidden; }
 
 @keyframes sleep {
-  0% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: translate(-2px, -16px) scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(-28px) scale(1.5);
-  }
+  0% { opacity: 1; transform: translateY(0) scale(1); }
+  50% { opacity: 0.5; transform: translate(-2px, -16px) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-28px) scale(1.5); }
 }
 
 /* Lightbox */
@@ -1755,9 +1694,7 @@ const downloadCV = () => {
   transition: background 0.2s;
 }
 
-.lightbox-close:hover {
-  background: rgba(241, 243, 244, 0.2);
-}
+.lightbox-close:hover { background: rgba(241, 243, 244, 0.2); }
 
 .lightbox-close img {
   width: 18px;
@@ -1783,9 +1720,7 @@ const downloadCV = () => {
   padding: 6px;
 }
 
-.lightbox-nav:hover {
-  background: rgba(241, 243, 244, 0.2);
-}
+.lightbox-nav:hover { background: rgba(241, 243, 244, 0.2); }
 
 .lightbox-nav img {
   width: 20px;
@@ -1793,13 +1728,8 @@ const downloadCV = () => {
   filter: brightness(0) saturate(100%) invert(1);
 }
 
-.lightbox-nav.prev {
-  left: 15px;
-}
-
-.lightbox-nav.next {
-  right: 15px;
-}
+.lightbox-nav.prev { left: 15px; }
+.lightbox-nav.next { right: 15px; }
 
 .lightbox-counter {
   position: absolute;
@@ -1825,29 +1755,26 @@ const downloadCV = () => {
 
 .footer-text {
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.7);
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  color: rgba(0, 0, 0, 0.5);
   font-family: 'Segoe UI', Tahoma, sans-serif;
   pointer-events: auto;
   line-height: 1.4;
 }
 
 .footer-text a {
-  color: rgba(255, 255, 255, 0.9);
+  color: #1a73e8;
   text-decoration: none;
   transition: color 0.2s;
 }
 
 .footer-text a:hover {
-  color: #ffffff;
+  color: #0d47a1;
   text-decoration: underline;
 }
 
 /* Tablet Styles */
 @media (min-width: 768px) {
-  .content {
-    padding: 80px 20px 40px;
-  }
+  .content { padding: 80px 20px 40px; }
 
   .logo {
     height: 220px;
@@ -1861,49 +1788,17 @@ const downloadCV = () => {
     margin-bottom: 30px;
   }
 
-  .search-bar {
-    padding: 6px 10px;
-  }
+  .search-bar { padding: 6px 10px; }
+  .search-input { font-size: 15px; }
+  .search-input::placeholder { font-size: 14px; }
+  .ai-mode-btn { padding: 7px 11px 7px 7px; font-size: 11px; }
+  .ai-text { display: inline; }
+  .shortcuts { gap: 45px; }
+  .shortcut-icon { width: 42px; height: 42px; }
+  .shortcut-icon img { width: 22px; height: 22px; }
+  .shortcut-label { font-size: 13px; }
 
-  .search-input {
-    font-size: 15px;
-  }
-
-  .search-input::placeholder {
-    font-size: 14px;
-  }
-
-  .ai-mode-btn {
-    padding: 7px 11px 7px 7px;
-    font-size: 11px;
-  }
-
-  .ai-text {
-    display: inline;
-  }
-
-  .shortcuts {
-    gap: 45px;
-  }
-
-  .shortcut-icon {
-    width: 42px;
-    height: 42px;
-  }
-
-  .shortcut-icon img {
-    width: 22px;
-    height: 22px;
-  }
-
-  .shortcut-label {
-    font-size: 13px;
-  }
-
-  .header-nav {
-    gap: 12px;
-    padding: 12px 16px;
-  }
+  .header-nav { gap: 12px; padding: 12px 16px; }
 
   .nav-links {
     display: flex;
@@ -1912,7 +1807,7 @@ const downloadCV = () => {
   }
 
   .nav-link {
-    color: rgba(255, 255, 255, 0.959);
+    color: #3c4043;
     text-decoration: none;
     font-size: 13px;
     font-family: arial, sans-serif;
@@ -1927,181 +1822,54 @@ const downloadCV = () => {
     left: 0;
     width: 100%;
     height: 1px;
-    background: rgba(255, 255, 255, 0.959);
+    background: #3c4043;
     transform: scaleX(0);
     transition: transform 0.2s ease;
   }
 
-  .nav-link:hover::after {
-    transform: scaleX(1);
-  }
+  .nav-link:hover::after { transform: scaleX(1); }
 
-  .nav-icons {
-    gap: 6px;
-  }
+  .nav-icons { gap: 6px; }
+  .nav-icon-btn { padding: 7px; width: 38px; height: 38px; }
+  .lab-btn img { width: 16px; height: 16px; }
+  .app-btn img { width: 24px; height: 24px; }
+  .profile-btn { width: 30px; height: 30px; }
+  .modal-content { max-width: 355px; }
+  .modal-email { font-size: 13px; }
+  .profile-name { font-size: 19px; }
+  .manage-account-btn { padding: 8px 22px; font-size: 13px; }
 
-  .nav-icon-btn {
-    padding: 7px;
-    width: 38px;
-    height: 38px;
-  }
+  .folder { max-width: 45rem; }
+  .tabs { margin: 0 1.5rem; width: calc(100% - 3rem); }
+  .tab { margin-right: 3rem; font-size: 95%; }
+  .tab span { font-size: 130%; min-width: 5.5rem; }
+  .content__inner { padding: 1rem; }
+  .page { padding: 1.2rem; min-height: 18rem; }
+  .project-gallery { flex-direction: row; gap: 12px; }
+  .gallery-main { width: 180px; height: 135px; }
+  .gallery-more { width: 180px; height: 135px; }
+  .more-text { font-size: 1.5rem; }
+  .project-overview, .project-skills { padding: 14px; }
+  .overview-text { font-size: 13px; }
+  .skills-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  .skill-item span { font-size: 12px; }
+  .project-repos { flex-direction: row; flex-wrap: wrap; gap: 12px; }
+  .repo-card { flex: 1; min-width: calc(50% - 6px); max-width: calc(50% - 6px); padding: 14px; }
+  .repo-name { font-size: 13px; }
+  .repo-language { font-size: 12px; }
+  .sleeping-cat { top: -48px; right: 28px; }
+  .sleep-symbol { font-size: 17px; }
+  .cat-svg { transform: scale(2.2); }
 
-  .lab-btn img {
-    width: 16px;
-    height: 16px;
-  }
-
-  .app-btn img {
-    width: 24px;
-    height: 24px;
-  }
-
-  .profile-btn {
-    width: 30px;
-    height: 30px;
-  }
-
-  .modal-content {
-    max-width: 355px;
-  }
-
-  .modal-email {
-    font-size: 13px;
-  }
-
-  .profile-name {
-    font-size: 19px;
-  }
-
-  .manage-account-btn {
-    padding: 8px 22px;
-    font-size: 13px;
-  }
-
-  /* Projects Modal Tablet */
-  .folder {
-    max-width: 45rem;
-  }
-
-  .tabs {
-    margin: 0 1.5rem;
-    width: calc(100% - 3rem);
-  }
-
-  .tab {
-    margin-right: 3rem;
-    font-size: 95%;
-  }
-
-  .tab span {
-    font-size: 130%;
-    min-width: 5.5rem;
-  }
-
-  .content__inner {
-    padding: 1rem;
-  }
-
-  .page {
-    padding: 1.2rem;
-    min-height: 18rem;
-  }
-
-  .project-gallery {
-    flex-direction: row;
-    gap: 12px;
-  }
-
-  .gallery-main {
-    width: 180px;
-    height: 135px;
-  }
-
-  .gallery-more {
-    width: 180px;
-    height: 135px;
-  }
-
-  .more-text {
-    font-size: 1.5rem;
-  }
-
-  .project-overview,
-  .project-skills {
-    padding: 14px;
-  }
-
-  .overview-text {
-    font-size: 13px;
-  }
-
-  .skills-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  .skill-item span {
-    font-size: 12px;
-  }
-
-  .project-repos {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 12px;
-  }
-
-  .repo-card {
-    flex: 1;
-    min-width: calc(50% - 6px);
-    max-width: calc(50% - 6px);
-    padding: 14px;
-  }
-
-  .repo-name {
-    font-size: 13px;
-  }
-
-  .repo-language {
-    font-size: 12px;
-  }
-
-  .sleeping-cat {
-    top: -48px;
-    right: 28px;
-  }
-
-  .sleep-symbol {
-    font-size: 17px;
-  }
-
-  .cat-svg {
-    transform: scale(2.2);
-  }
-
-  .notification-popup {
-    left: 20px;
-    transform: none;
-    width: 380px;
-  }
-
-  .slide-enter-from {
-    transform: translateY(100px);
-  }
-
-  .slide-leave-to {
-    transform: translateY(100px);
-  }
-
-  .footer-text {
-    font-size: 10px;
-  }
+  .notification-popup { left: 20px; transform: none; width: 380px; }
+  .slide-enter-from { transform: translateY(100px); }
+  .slide-leave-to { transform: translateY(100px); }
+  .footer-text { font-size: 10px; }
 }
 
 /* Desktop Styles */
 @media (min-width: 1024px) {
-  .content {
-    padding: 80px 20px 40px;
-  }
+  .content { padding: 80px 20px 40px; }
 
   .logo {
     height: 265px;
@@ -2110,468 +1878,113 @@ const downloadCV = () => {
     margin-bottom: -60px;
   }
 
-  .search-container {
-    max-width: 672px;
-  }
-
-  .search-bar {
-    padding: 6.5px 10px;
-  }
-
-  .search-icon {
-    margin-right: 12px;
-    margin-left: -4px;
-    padding: 8px;
-  }
-
-  .search-icon img {
-    width: 22px;
-    height: 22px;
-  }
-
-  .search-input {
-    font-size: 16px;
-    margin-left: -6px;
-    margin-bottom: 2px;
-  }
-
-  .search-input::placeholder {
-    font-size: 16px;
-  }
-
-  .search-actions {
-    gap: 12px;
-  }
-
-  .action-btn {
-    padding: 1px;
-  }
-
-  .action-btn img {
-    width: 18px;
-    height: 18px;
-  }
-
-  .ai-mode-btn {
-    padding: 8px 12px 8px 8px;
-    font-size: 12px;
-  }
-
-  .ai-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .shortcuts {
-    gap: 55px;
-    margin-bottom: 25px;
-  }
-
-  .shortcut-item::before {
-    width: 80px;
-    height: 80px;
-  }
-
-  .shortcut-icon {
-    width: 44px;
-    height: 44px;
-  }
-
-  .shortcut-icon img {
-    width: 23px;
-    height: 23px;
-  }
-
-  .customize-btn {
-    bottom: 16px;
-    right: 16px;
-    width: 32px;
-    height: 32px;
-  }
-
-  .customize-btn img {
-    width: 17px;
-    height: 17px;
-  }
-
-  .header-nav {
-    gap: 15px;
-    padding: 15px 20px;
-  }
-
-  .nav-icon-btn {
-    padding: 8px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .lab-btn img {
-    width: 17px;
-    height: 17px;
-  }
-
-  .app-btn img {
-    width: 25px;
-    height: 25px;
-  }
-
-  .profile-btn {
-    width: 32px;
-    height: 32px;
-  }
-
-  .profile-btn::before {
-    width: 32px;
-    height: 32px;
-  }
-
-  .profile-btn:hover::before,
-  .profile-btn.active::before {
-    width: 40px;
-    height: 40px;
-  }
-
-  .modal-overlay {
-    padding: 60px 20px 20px;
-    justify-content: flex-end;
-  }
-
-  .modal-content {
-    max-width: 365px;
-  }
-
-  .modal-header {
-    padding: 12px 20px;
-  }
-
-  .close-btn {
-    padding: 8px;
-    margin: -8px;
-    right: 16px;
-  }
-
-  .close-btn img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .modal-body {
-    padding: 24px 20px 28px;
-  }
-
-  .profile-photo {
-    width: 75px;
-    height: 75px;
-    margin-bottom: 16px;
-  }
-
-  .photo-edit-btn {
-    width: 28px;
-    height: 28px;
-  }
-
-  .photo-edit-btn img {
-    width: 16px;
-    height: 16px;
-  }
-
-  .profile-name {
-    font-size: 20px;
-  }
-
-  .manage-account-btn {
-    padding: 9px 24px;
-  }
-
-  /* Projects Modal Desktop */
-  .projects-modal-overlay {
-    padding: 20px;
-  }
-
-  .folder {
-    max-width: 50rem;
-  }
-
-  .tabs {
-    padding: 2rem 0 0 0;
-    margin: 0 2rem;
-    width: calc(100% - 4rem);
-  }
-
-  .tab {
-    margin-left: -35px;
-    margin-right: 4rem;
-    font-size: 100%;
-  }
-
-  .tab:first-of-type {
-    margin-left: 30px;
-  }
-
-  .tab div {
-    padding: 6px 0;
-  }
-
-  .tab span {
-    padding: 6px 15px 6px;
-    font-size: 140%;
-    min-width: 6rem;
-  }
-
-  .tab:before,
-  .tab:after {
-    width: 30px;
-  }
-
-  .tab:before {
-    right: -16px;
-  }
-
-  .tab:after {
-    left: -16px;
-  }
-
-  .content__inner {
-    padding: 1rem;
-  }
-
-  .page {
-    padding: 1.5rem;
-    min-height: 20rem;
-    line-height: 160%;
-  }
-
-  .project-gallery {
-    margin-bottom: 1.5rem;
-  }
-
-  .gallery-main {
-    width: 200px;
-    height: 150px;
-  }
-
-  .gallery-more {
-    width: 200px;
-    height: 150px;
-  }
-
-  .more-text {
-    font-size: 1.6rem;
-  }
-
-  .project-overview {
-    margin-bottom: 1.5rem;
-    padding: 16px;
-  }
-
-  .role-badge {
-    padding: 6px 12px;
-    font-size: 13px;
-  }
-
-  .overview-text {
-    font-size: 14px;
-  }
-
-  .project-skills {
-    margin-bottom: 1.5rem;
-    padding: 16px;
-  }
-
-  .skills-header {
-    font-size: 14px;
-    margin-bottom: 12px;
-  }
-
-  .skills-grid {
-    gap: 12px;
-  }
-
-  .skill-item {
-    padding: 8px;
-  }
-
-  .skill-check {
-    width: 18px;
-    height: 18px;
-  }
-
-  .skill-item span {
-    font-size: 13px;
-  }
-
-  .project-tools strong {
-    font-size: 14px;
-  }
-
-  .tools-list {
-    gap: 8px;
-  }
-
-  .tool-badge {
-    padding: 6px 12px;
-    font-size: 12px;
-  }
-
-  .tool-dot {
-    width: 8px;
-    height: 8px;
-  }
-
-  .project-repos {
-    margin-top: 1.5rem;
-  }
-
-  .repo-card {
-    padding: 16px;
-  }
-
-  .repo-header {
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-
-  .repo-icon {
-    width: 16px;
-    height: 16px;
-  }
-
-  .repo-name {
-    font-size: 14px;
-  }
-
-  .repo-badge {
-    font-size: 12px;
-  }
-
-  .repo-language {
-    gap: 6px;
-    font-size: 12px;
-  }
-
-  .language-dot {
-    width: 12px;
-    height: 12px;
-  }
-
-  .sleeping-cat {
-    top: -54px;
-    right: 33px;
-  }
-
-  .sleep-symbol {
-    margin-left: -12px;
-    margin-bottom: 10px;
-    font-size: 19px;
-  }
-
-  .sleep-symbol span:nth-child(2) {
-    margin-left: -5px;
-  }
-
-  .sleep-symbol span:nth-child(3) {
-    margin-left: -5px;
-  }
-
-  .cat-svg {
-    transform: scale(2.5);
-  }
+  .search-container { max-width: 672px; }
+  .search-bar { padding: 6.5px 10px; }
+  .search-icon { margin-right: 12px; margin-left: -4px; padding: 8px; }
+  .search-icon img { width: 22px; height: 22px; }
+  .search-input { font-size: 16px; margin-left: -6px; margin-bottom: 2px; }
+  .search-input::placeholder { font-size: 16px; }
+  .search-actions { gap: 12px; }
+  .action-btn { padding: 1px; }
+  .action-btn img { width: 18px; height: 18px; }
+  .ai-mode-btn { padding: 8px 12px 8px 8px; font-size: 12px; }
+  .ai-icon { width: 16px; height: 16px; }
+  .shortcuts { gap: 55px; margin-bottom: 25px; }
+  .shortcut-item::before { width: 80px; height: 80px; }
+  .shortcut-icon { width: 44px; height: 44px; }
+  .shortcut-icon img { width: 23px; height: 23px; }
+  .customize-btn { bottom: 16px; right: 16px; width: 32px; height: 32px; }
+  .customize-btn img { width: 17px; height: 17px; }
+
+  .header-nav { gap: 15px; padding: 15px 20px; }
+  .nav-icon-btn { padding: 8px; width: 40px; height: 40px; }
+  .lab-btn img { width: 17px; height: 17px; }
+  .app-btn img { width: 25px; height: 25px; }
+  .profile-btn { width: 32px; height: 32px; }
+  .profile-btn::before { width: 32px; height: 32px; }
+  .profile-btn:hover::before, .profile-btn.active::before { width: 40px; height: 40px; }
+
+  .modal-overlay { padding: 60px 20px 20px; justify-content: flex-end; }
+  .modal-content { max-width: 365px; }
+  .modal-header { padding: 12px 20px; }
+  .close-btn { padding: 8px; margin: -8px; right: 16px; }
+  .close-btn img { width: 20px; height: 20px; }
+  .modal-body { padding: 24px 20px 28px; }
+  .profile-photo { width: 75px; height: 75px; margin-bottom: 16px; }
+  .photo-edit-btn { width: 28px; height: 28px; }
+  .photo-edit-btn img { width: 16px; height: 16px; }
+  .profile-name { font-size: 20px; }
+  .manage-account-btn { padding: 9px 24px; }
+
+  .projects-modal-overlay { padding: 20px; }
+  .folder { max-width: 50rem; }
+  .tabs { padding: 2rem 0 0 0; margin: 0 2rem; width: calc(100% - 4rem); }
+  .tab { margin-left: -35px; margin-right: 4rem; font-size: 100%; }
+  .tab:first-of-type { margin-left: 30px; }
+  .tab div { padding: 6px 0; }
+  .tab span { padding: 6px 15px 6px; font-size: 140%; min-width: 6rem; }
+  .tab:before, .tab:after { width: 30px; }
+  .tab:before { right: -16px; }
+  .tab:after { left: -16px; }
+  .content__inner { padding: 1rem; }
+  .page { padding: 1.5rem; min-height: 20rem; line-height: 160%; }
+  .project-gallery { margin-bottom: 1.5rem; }
+  .gallery-main { width: 200px; height: 150px; }
+  .gallery-more { width: 200px; height: 150px; }
+  .more-text { font-size: 1.6rem; }
+  .project-overview { margin-bottom: 1.5rem; padding: 16px; }
+  .role-badge { padding: 6px 12px; font-size: 13px; }
+  .overview-text { font-size: 14px; }
+  .project-skills { margin-bottom: 1.5rem; padding: 16px; }
+  .skills-header { font-size: 14px; margin-bottom: 12px; }
+  .skills-grid { gap: 12px; }
+  .skill-item { padding: 8px; }
+  .skill-check { width: 18px; height: 18px; }
+  .skill-item span { font-size: 13px; }
+  .project-tools strong { font-size: 14px; }
+  .tools-list { gap: 8px; }
+  .tool-badge { padding: 6px 12px; font-size: 12px; }
+  .tool-dot { width: 8px; height: 8px; }
+  .project-repos { margin-top: 1.5rem; }
+  .repo-card { padding: 16px; }
+  .repo-header { gap: 8px; margin-bottom: 12px; }
+  .repo-icon { width: 16px; height: 16px; }
+  .repo-name { font-size: 14px; }
+  .repo-badge { font-size: 12px; }
+  .repo-language { gap: 6px; font-size: 12px; }
+  .language-dot { width: 12px; height: 12px; }
+  .sleeping-cat { top: -54px; right: 33px; }
+  .sleep-symbol { margin-left: -12px; margin-bottom: 10px; font-size: 19px; }
+  .sleep-symbol span:nth-child(2) { margin-left: -5px; }
+  .sleep-symbol span:nth-child(3) { margin-left: -5px; }
+  .cat-svg { transform: scale(2.5); }
 
   @keyframes sleep {
-    0% {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    50% {
-      opacity: 0.5;
-      transform: translate(-3px, -20px) scale(1.2);
-    }
-    100% {
-      opacity: 0;
-      transform: translateY(-35px) scale(1.5);
-    }
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    50% { opacity: 0.5; transform: translate(-3px, -20px) scale(1.2); }
+    100% { opacity: 0; transform: translateY(-35px) scale(1.5); }
   }
 
-  .lightbox-overlay {
-    padding: 20px;
-  }
-
-  .lightbox-content img {
-    max-height: 90vh;
-  }
-
-  .lightbox-close {
-    top: 20px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-  }
-
-  .lightbox-close img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .lightbox-nav {
-    width: 48px;
-    height: 48px;
-    padding: 8px;
-  }
-
-  .lightbox-nav img {
-    width: 24px;
-    height: 24px;
-  }
-
-  .lightbox-nav.prev {
-    left: 20px;
-  }
-
-  .lightbox-nav.next {
-    right: 20px;
-  }
-
-  .lightbox-counter {
-    bottom: -30px;
-    font-size: 14px;
-  }
-
-  .notification-popup {
-    max-width: 400px;
-    padding: 16px 20px;
-  }
-
-  .notification-icon {
-    width: 24px;
-    height: 24px;
-  }
-
-  .notification-title {
-    font-size: 14px;
-  }
-
-  .notification-message {
-    font-size: 13px;
-  }
-
-  .notification-close img {
-    width: 20px;
-    height: 20px;
-  }
-
-  .footer {
-    padding: 12px 20px;
-  }
-
-  .footer-text {
-    font-size: 11px;
-  }
+  .lightbox-overlay { padding: 20px; }
+  .lightbox-content img { max-height: 90vh; }
+  .lightbox-close { top: 20px; right: 20px; width: 40px; height: 40px; }
+  .lightbox-close img { width: 20px; height: 20px; }
+  .lightbox-nav { width: 48px; height: 48px; padding: 8px; }
+  .lightbox-nav img { width: 24px; height: 24px; }
+  .lightbox-nav.prev { left: 20px; }
+  .lightbox-nav.next { right: 20px; }
+  .lightbox-counter { bottom: -30px; font-size: 14px; }
+  .notification-popup { max-width: 400px; padding: 16px 20px; }
+  .notification-icon { width: 24px; height: 24px; }
+  .notification-title { font-size: 14px; }
+  .notification-message { font-size: 13px; }
+  .notification-close img { width: 20px; height: 20px; }
+  .footer { padding: 12px 20px; }
+  .footer-text { font-size: 11px; }
 }
 
-/* Large Desktop Styles */
+/* Large Desktop */
 @media (min-width: 1440px) {
-  .shortcuts {
-    gap: 65px;
-  }
+  .shortcuts { gap: 65px; }
 }
 </style>
