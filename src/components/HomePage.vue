@@ -559,7 +559,7 @@ const downloadCV = () => {
 </script>
 
 <style scoped>
-/* Mobile Styles */
+/* Desktop Styles */
 
 /* Modal Fade Transition */
 .modal-fade-enter-active,
@@ -709,7 +709,9 @@ const downloadCV = () => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 60px 15px 40px;
+  padding: 0 15px 40px;
+  min-height: 100vh;
+  justify-content: center;
 }
 
 .logo {
@@ -1905,7 +1907,7 @@ a.repo-name:hover {
   text-decoration: underline;
 }
 
-/* Tablet Styles */
+/* Mobile Styles */
 @media (min-width: 768px) {
   .content { padding: 80px 20px 40px; }
 
