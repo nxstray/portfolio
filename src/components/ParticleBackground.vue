@@ -25,13 +25,13 @@ onMounted(async () => {
     cursor: { radius: 0.065, strength: 3, dragFactor: 0.015 },
     halo: {
       outerOscFrequency: 2.6, outerOscAmplitude: 0.76,
-      radiusBase: 2.4, radiusAmplitude: 0.5, shapeAmplitude: 0.75,
-      rimWidth: 1.8, outerStartOffset: 0.4, outerEndOffset: 2.2,
+      radiusBase: 2.2, radiusAmplitude: 0.6, shapeAmplitude: 0.6,
+      rimWidth: 1.5, outerStartOffset: 0.4, outerEndOffset: 2.2,
       scaleX: 1.3, scaleY: 1
     },
     particles: {
-      baseSize: 0.016, activeSize: 0.044,
-      blobScaleX: 1, blobScaleY: 0.6,
+      baseSize: 0.014, activeSize: 0.05,
+      blobScaleX: 1, blobScaleY: 0.65,
       rotationSpeed: 0.1, rotationJitter: 0.2,
       cursorFollowStrength: 1, oscillationFactor: 1,
       colorBase: '#0000ff', colorOne: '#4285f5',
@@ -102,7 +102,7 @@ onMounted(async () => {
     '  vec2 pushDir = normalize(relToMouse + vec2(0.0001, 0.0));',
     '  float pushAmt = (breathCycle * 0.5 + 0.5) * 0.5;',
     '  pos.xy += pushDir * pushAmt * rimInfluence;',
-    '  pos.z += rimInfluence * 0.3 * sin(uTime);',
+    '  pos.z += rimInfluence * 0.9 * sin(uTime);',
     '',
     '  float outerInfluence = smoothstep(baseRadius + uHaloOuterStartOffset, baseRadius + uHaloOuterEndOffset, dist);',
     '  float outerOsc = sin(uTime * uOuterOscFrequency + pos.x * 0.6 + pos.y * 0.6);',
