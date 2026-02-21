@@ -717,8 +717,8 @@ const downloadCV = () => {
 .logo {
   height: 100px !important;
   max-width: 400px !important;
-  margin-top: 30px !important;
-  margin-bottom: 50px !important;
+  margin-top: -70px !important;
+  margin-bottom: 30px !important;
 }
 
 .search-container {
