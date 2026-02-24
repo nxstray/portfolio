@@ -3,7 +3,7 @@
     <!-- Particle Background Animation -->
     <ParticleBackground />
 
-    <!-- Background overlay (subtle, for white bg) -->
+    <!-- Background overlay -->
     <div class="background-overlay"></div>
     
     <!-- Header Navigation -->
@@ -111,80 +111,87 @@
 
     <!-- Projects Modal -->
     <Transition name="modal-fade">
-      <div v-if="showProjectsModal" class="projects-modal-overlay" @click="closeProjectsModal">
-        <div class="folder" @click.stop>
-          <div class="tabs">
-            <button 
-              v-for="(tab, index) in projectTabs" 
-              :key="index"
-              :class="['tab', { active: activeTab === index }]"
-              @click="openTab(index)"
-            >
-              <div>
-                <span>{{ tab.name }}</span>
-              </div>
-            </button>
+      <div v-if="showProjectsModal" class="projects-modal-overlay" @click="handleOverlayClick">
+        <div class="folder">
+
+          <!-- STACK PREVIEW -->
+          <div v-if="showStackPreview" class="card-stack-wrapper" @click="handleOverlayClick">
+            <section class="card-stack" ref="cardStackRef" @click.stop @pointerup.stop>
+              <article
+                v-for="(tab, index) in projectTabs"
+                :key="tab.name"
+                class="stack-card-new"
+                :style="`--i: ${index}`"
+                :data-index="index"
+              >
+                <div class="card-content-new">
+                  <img :src="tab.images[0]" :alt="tab.name" />
+                  <h3 class="card-title-new">{{ tab.name }}</h3>
+                </div>
+              </article>
+            </section>
           </div>
-          
-          <div class="content-wrapper">
-            <div 
-              v-for="(tab, index) in projectTabs" 
-              :key="index"
-              :class="['content__inner', { active: activeTab === index }]"
-            >
+
+          <!-- DETAIL VIEW -->
+          <div v-else class="detail-view" @click.stop>
+            <div class="detail-content">
               <div class="page">
-                <!-- Project Images Grid -->
-                <div v-if="tab.images" class="project-gallery">
-                  <!-- Main Image -->
+                <div v-if="projectTabs[activeTab].images" class="project-gallery">
                   <div class="gallery-main" @click="openLightbox(0)">
-                    <img :src="tab.images[0]" :alt="`${tab.name} 1`" />
+                    <img :src="projectTabs[activeTab].images[0]" :alt="projectTabs[activeTab].name" />
                   </div>
-                  
-                  <!-- More Images Indicator -->
-                  <div v-if="tab.images.length > 1" class="gallery-more" @click="openLightbox(1)">
-                    <img :src="tab.images[1]" alt="Preview" class="more-bg" />
-                    <span class="more-text">+{{ tab.images.length - 1 }}</span>
+                  <div v-if="projectTabs[activeTab].images.length > 1" class="gallery-more" @click="openLightbox(1)">
+                    <img :src="projectTabs[activeTab].images[1]" alt="Preview" class="more-bg" />
+                    <span class="more-text">+{{ projectTabs[activeTab].images.length - 1 }}</span>
                   </div>
                 </div>
 
-                <!-- Project Overview -->
                 <div class="project-overview">
                   <div class="overview-header">
                     <div class="role-badge"
+                      ref="badgeRef"
+                      :class="{ 'is-flaring': badgeFlaring }"
                       :style="{ backgroundColor: currentBadgeColor.bg, color: currentBadgeColor.text }"
                       @mouseenter="randomizeBadgeColor"
                       @mouseleave="resetBadgeColor"
                     >
-                      {{ tab.role }}
-                    </div>
+                      <span 
+                        v-for="(pos, i) in flarePositions"
+                        :key="`f${i}-${flareKey}`"
+                        class="flare"
+                        :style="{
+                          top: pos.top + 'px',
+                          left: pos.left + 'px',
+                          animationDelay: (i * 0.07) + 's'
+                        }"
+                      ></span>
+                      {{ projectTabs[activeTab].role }}</div>
                   </div>
-                  <p class="overview-text">{{ tab.overview }}</p>
+                  <p class="overview-text">{{ projectTabs[activeTab].overview }}</p>
                 </div>
 
-                <!-- Skills & Competencies -->
-                <div v-if="tab.skills" class="project-skills">
+                <div v-if="projectTabs[activeTab].skills" class="project-skills">
                   <div class="skills-header">Key Skills Demonstrated</div>
                   <div class="skills-grid">
-                    <div 
-                      v-for="(skill, skillIndex) in tab.skills" 
+                    <div
+                      v-for="(skill, skillIndex) in projectTabs[activeTab].skills"
                       :key="skillIndex"
                       class="skill-item"
-                      :class="{ 'skill-active': isSkillActive(tab.name, skillIndex) }"
-                      @mouseenter="toggleSkill(tab.name, skillIndex)"
+                      :class="{ 'skill-active': isSkillActive(projectTabs[activeTab].name, skillIndex) }"
+                      @mouseenter="toggleSkill(projectTabs[activeTab].name, skillIndex)"
                     >
                       <img :src="checkIcon" alt="Check" class="skill-check" />
                       <span>{{ skill }}</span>
                     </div>
                   </div>
                 </div>
-                
-                <!-- Tools Used -->
+
                 <div class="project-tools">
                   <strong>Tools:</strong>
                   <div class="tools-list">
-                    <span 
-                      v-for="(tool, toolIndex) in tab.tools" 
-                      :key="toolIndex" 
+                    <span
+                      v-for="(tool, toolIndex) in projectTabs[activeTab].tools"
+                      :key="toolIndex"
                       class="tool-badge"
                       @mouseenter="$event.currentTarget.style.backgroundColor = getToolColor(tool) + '22'; $event.currentTarget.style.borderColor = getToolColor(tool)"
                       @mouseleave="$event.currentTarget.style.backgroundColor = ''; $event.currentTarget.style.borderColor = ''"
@@ -195,22 +202,15 @@
                   </div>
                 </div>
 
-                <!-- GitHub Repositories -->
-                <div v-if="tab.repos" class="project-repos">
-                  <div 
-                    v-for="(repo, repoIndex) in tab.repos" 
+                <div v-if="projectTabs[activeTab].repos" class="project-repos">
+                  <div
+                    v-for="(repo, repoIndex) in projectTabs[activeTab].repos"
                     :key="repoIndex"
-                    :href="repo.isPrivate ? '#' : repo.url"
-                    :target="repo.isPrivate ? '_self' : '_blank'"
                     :class="['repo-card', { 'has-cat': repo.name.toLowerCase().includes('backend') }]"
-                    @click="repo.isPrivate ? $event.preventDefault() : null"
                   >
-                    <!-- Sleeping Cat Animation (only for backend repo) -->
                     <div v-if="repo.name.toLowerCase().includes('backend')" class="sleeping-cat">
                       <div class="sleep-symbol">
-                        <span>Z</span>
-                        <span>z</span>
-                        <span>z</span>
+                        <span>Z</span><span>z</span><span>z</span>
                       </div>
                       <div class="cat-svg">
                         <svg width="45px" height="35px" viewBox="0 0 45.952225 35.678726" xmlns="http://www.w3.org/2000/svg">
@@ -262,12 +262,12 @@
                     </div>
                     <div class="repo-header">
                       <img :src="githubIcon" alt="GitHub" class="repo-icon" />
-                      <a 
-                        class="repo-name" 
+                      <a
+                        class="repo-name"
                         style="margin-right: auto;"
                         :href="repo.isPrivate ? '#' : repo.url"
-                        :target="repo.isPrivate ? '_self' : '_blank'" 
-                        @click="repo.isPrivate ? $$event.preventDefault() : null"
+                        :target="repo.isPrivate ? '_self' : '_blank'"
+                        @click="repo.isPrivate ? $event.preventDefault() : null"
                       >{{ repo.name }}</a>
                       <span class="repo-badge">{{ repo.isPrivate ? 'Private' : 'Public' }}</span>
                     </div>
@@ -323,8 +323,8 @@
     <!-- Footer -->
     <footer class="footer">
       <span class="footer-text">
-        © Google | Tab overlay inspired by 
-        <a href="https://codepen.io/oliviale/pen/bGWXEWK" target="_blank" rel="noopener noreferrer">Olivia Ng</a>
+        © Google | Stacked cards inspired by 
+        <a href="https://codepen.io/emilandersson/pen/jEbOKed" target="_blank" rel="noopener noreferrer">MoxoPixel</a>
         | Sleeping cat inspired by 
         <a href="https://codepen.io/scjaabkw-the-looper/pen/JoXKvwP" target="_blank" rel="noopener noreferrer">Marcel</a>
       </span>
@@ -333,7 +333,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch, nextTick } from 'vue'
 import ParticleBackground from '@/components/ParticleBackground.vue'
 
 import googleLogo from '@/assets/main/google.png'
@@ -378,7 +378,17 @@ const showModal = ref(false)
 const showNotification = ref(false)
 const showProjectsModal = ref(false)
 const activeTab = ref(0)
+
+const showStackPreview = ref(true)
+const sliderIndex = ref(0)
+const cardStackRef = ref(null)
+
 const activeSkills = ref({})
+const badgeFlaring = ref(false)
+const flareInterval = ref(null)
+const flareKey =  ref(0)
+const flarePositions = ref([])
+const badgeRef = ref(null)
 
 const showLightbox = ref(false)
 const currentImageIndex = ref(0)
@@ -400,23 +410,44 @@ const toolColors = {
 }
 
 const badgeColors = [
-  { bg: '#e8f5e9', text: '#2e7d32' },
-  { bg: '#e3f2fd', text: '#1565c0' },
-  { bg: '#fce4ec', text: '#c62828' },
-  { bg: '#fff8e1', text: '#f57f17' },
-  { bg: '#f3e5f5', text: '#6a1b9a' },
-  { bg: '#e0f7fa', text: '#00695c' },
+  { bg: '#e8f0fe', text: '#1a73e8' },
+  { bg: '#fce8e6', text: '#d93025' }, 
+  { bg: '#e6f4ea', text: '#1e8e3e' },  
+  { bg: '#fef7e0', text: '#f29900' }, 
 ]
 const currentBadgeColor = ref({ bg: '#dadadb', text: '#3a3939' })
 
 const randomizeBadgeColor = () => {
-  const pick = badgeColors[Math.floor(Math.random() * badgeColors.length)]
+  const current = currentBadgeColor.value
+  const available = badgeColors.filter(c => c.bg !== current.bg)
+  const pick = available[Math.floor(Math.random() * available.length)]
   currentBadgeColor.value = pick
-}
-const resetBadgeColor = () => {
-  currentBadgeColor.value = { bg: '#dadadb', text: '#3a3939' }
+
+  // Increment key buat paksa flare re-render
+  generateFlarePositions()
+  flareKey.value++
+
+  if (!flareInterval.value) {
+    flareInterval.value = setInterval(() => {
+      generateFlarePositions()
+      flareKey.value++
+    }, 2000)
+  }
 }
 
+const resetBadgeColor = () => {
+
+}
+
+const generateFlarePositions = () => {
+  const w = badgeRef.value?.offsetWidth || 120
+  const h = badgeRef.value?.offsetHeight || 28
+
+  flarePositions.value = Array.from({ length: 4 }, () => ({
+    top: Math.random() * (h + 10) - 10,
+    left: Math.random() * (w + 20) - 10,
+  }))
+}
 const getToolColor = (tool) => {
   return toolColors[tool] || '#666666'
 }
@@ -506,13 +537,31 @@ const closeNotification = () => {
 
 const closeProjectsModal = () => {
   showProjectsModal.value = false
+  showStackPreview.value = true
   activeTab.value = 0
+  sliderIndex.value = 0
   activeSkills.value = {}
+  clearInterval(flareInterval.value)
+  flareInterval.value = null
+  flareKey.value = 0
+  currentBadgeColor.value = { bg: '#dadadb', text: '#3a3939' }
 }
 
-const openTab = (index) => {
+const handleOverlayClick = () => {
+  if (!showStackPreview.value) {
+    showStackPreview.value = true
+    clearInterval(flareInterval.value)
+    flareInterval.value = null
+    flareKey.value = 0
+    currentBadgeColor.value = { bg: '#dadadb', text: '#3a3939' }
+  } else {
+    closeProjectsModal()
+  }
+}
+
+const openDetail = (index) => {
   activeTab.value = index
-  activeSkills.value = {}
+  showStackPreview.value = false
 }
 
 const toggleSkill = (tabName, skillIndex) => {
@@ -534,15 +583,175 @@ onMounted(() => {
   }, 2000)
 })
 
+watch(showStackPreview, async (val) => {
+  if (val) {
+    await nextTick()
+    initCardStack()
+  }
+})
+
+watch(showProjectsModal, async (val) => {
+  if (val && showStackPreview.value) {
+    await nextTick()
+    initCardStack()
+  }
+})
+
+const initCardStack = () => {
+  const cardStack = cardStackRef.value
+  if (!cardStack) return
+
+  let cards = [...cardStack.querySelectorAll('.stack-card-new')]
+  let isSwiping = false
+  let startX = 0
+  let currentX = 0
+  let animationFrameId = null
+  let didSwipe = false
+
+
+  const updatePositions = () => {
+    cards.forEach((card, i) => {
+      card.style.transition = 'transform 0.35s ease, opacity 0.35s ease'
+      card.style.setProperty('--i', i)
+      card.style.setProperty('--swipe-x', '0px')
+      card.style.setProperty('--swipe-rotate', '0deg')
+      card.style.opacity = i > 2 ? '0' : '1'
+    })
+  }
+
+  const applySwipeStyles = (deltaX) => {
+    const card = cards[0]
+    if (!card) return
+    card.style.transition = 'none'
+    card.style.setProperty('--swipe-x', `${deltaX}px`)
+    card.style.setProperty('--swipe-rotate', `${deltaX * 0.15}deg`)
+    card.style.opacity = 1 - Math.min(Math.abs(deltaX) / 150, 1) * 0.75
+  }
+
+  const animateOut = (card, direction) => {
+    return new Promise((resolve) => {
+      // Fase 1: geser keluar ke samping
+      card.style.transition = 'transform 0.25s ease-in, opacity 0.25s ease-in'
+      card.style.setProperty('--swipe-x', `${direction * 350}px`)
+      card.style.setProperty('--swipe-rotate', `${direction * 25}deg`)
+      card.style.opacity = '0'
+
+      setTimeout(() => {
+        // Fase 2: reset posisi, persiapan masuk dari belakang
+        card.style.transition = 'none'
+        card.style.setProperty('--swipe-x', `${-direction * 350}px`)
+        card.style.setProperty('--swipe-rotate', `${-direction * 25}deg`)
+        card.style.opacity = '0'
+        card.style.setProperty('--i', cards.length - 1)
+
+        setTimeout(() => {
+          // Fase 3: masuk ke posisi belakang stack
+          card.style.transition = 'transform 0.3s ease-out, opacity 0.3s ease-out'
+          card.style.setProperty('--swipe-x', '0px')
+          card.style.setProperty('--swipe-rotate', '0deg')
+          card.style.opacity = '0'
+          resolve()
+        }, 30)
+      }, 250)
+    })
+  }
+
+  const handleStart = (e) => {
+    if (isSwiping) return
+    isSwiping = true
+    didSwipe = false
+    startX = currentX = e.clientX
+    const card = cards[0]
+    if (card) card.style.transition = 'none'
+  }
+
+  const handleMove = (e) => {
+    if (!isSwiping) return
+    cancelAnimationFrame(animationFrameId)
+    animationFrameId = requestAnimationFrame(() => {
+      currentX = e.clientX
+      const deltaX = currentX - startX
+      if (Math.abs(deltaX) > 8) didSwipe = true
+      applySwipeStyles(deltaX)
+    })
+  }
+
+  const handleEnd = async (e) => {
+    if (!isSwiping) return
+    cancelAnimationFrame(animationFrameId)
+    isSwiping = false
+
+    const deltaX = currentX - startX
+    const card = cards[0]
+
+    if (Math.abs(deltaX) > 60 && card) {
+      const dir = Math.sign(deltaX)
+
+      // Jalanin animasi keluar
+      await animateOut(card, dir)
+
+      // Susun ulang urutan kartu
+      cards = [...cards.slice(1), card]
+
+      // Update semua posisi
+      updatePositions()
+    } else if (card) {
+
+      // Kembalikan ke posisi semula
+      card.style.transition = 'transform 0.25s ease, opacity 0.25s ease'
+      applySwipeStyles(0)
+    }
+
+    startX = currentX = 0
+  }
+
+  cardStack.addEventListener('click', (e) => {
+    if (didSwipe) {
+      didSwipe = false
+      return
+    }
+    const card = e.target.closest('.stack-card-new')
+    if (!card) return
+    const index = cards.indexOf(card)
+    if (index === 0) openDetail(parseInt(card.dataset.index))
+  })
+
+  cardStack.addEventListener('pointerdown', handleStart)
+  cardStack.addEventListener('pointermove', handleMove)
+  cardStack.addEventListener('pointerup', handleEnd)
+  cardStack.addEventListener('pointerleave', handleEnd)
+  updatePositions()
+}
+
+const levenshtein = (a, b) => {
+  const dp = Array.from({ length: a.length + 1 }, (_, i) =>
+    Array.from({ length: b.length + 1 }, (_, j) =>
+      i === 0 ? j : j === 0 ? i : 0
+    )
+  )
+  for (let i = 1; i <= a.length; i++)
+    for (let j = 1; j <= b.length; j++)
+      dp[i][j] = a[i-1] === b[j-1]
+        ? dp[i-1][j-1]
+        : 1 + Math.min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])
+  return dp[a.length][b.length]
+}
+
 const handleSearch = (event) => {
   const query = event.target.value.toLowerCase().trim()
-  
-  if (query === 'download cv') {
-    downloadCV()
-    event.target.value = ''
-  } else if (query === 'projects') {
-    showProjectsModal.value = true
-    event.target.value = ''
+  if (!query) return
+
+  const commands = [
+    { keyword: 'projects', threshold: 3, action: () => { showProjectsModal.value = true } },
+    { keyword: 'download cv', threshold: 4, action: () => { downloadCV() } },
+  ]
+
+  for (const cmd of commands) {
+    if (levenshtein(query, cmd.keyword) <= cmd.threshold) {
+      cmd.action()
+      event.target.value = ''
+      return
+    }
   }
 }
 
@@ -1231,133 +1440,9 @@ const downloadCV = () => {
   display: none;
 }
 
-.tabs {
-  padding: 1.5rem 0 0 0;
-  width: calc(100% - 2rem);
-  margin: 0 1rem;
-  overflow-x: auto;
-  white-space: nowrap;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-  height: 0;
-}
-
-.tab {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  line-height: 0.8;
-  display: inline-block;
-  margin-left: -25px;
-  filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.05));
-  border: none;
-  border-radius: 6px 6px 0 0;
-  position: relative;
-  margin-right: 2rem;
-  background: linear-gradient(to bottom, #fee9a5, #f9d877);
-  white-space: nowrap;
-  cursor: pointer;
-  font-size: 90%;
-}
-
-.tab:focus { outline: none; }
-
-.tab:focus span {
-  border-bottom: 2px solid;
-  border-radius: 0;
-}
-
-.tab:first-of-type { margin-left: 20px; }
-
-.tab div {
-  background: linear-gradient(to bottom, #fee9a5, #f9d877);
-  padding: 5px 0;
-  position: relative;
-  z-index: 10;
-}
-
-.tab span {
-  display: inline-block;
-  border: 2px solid transparent;
-  padding: 5px 12px 5px;
-  border-radius: 5px;
-  z-index: 5;
-  position: relative;
-  font-size: 120%;
-  color: black;
-  min-width: 5rem;
-}
-
-.tab:before,
-.tab:after {
-  content: "";
-  height: 100%;
-  position: absolute;
-  background: linear-gradient(to bottom, #fee9a5, #f9d877);
-  border-radius: 6px 6px 0 0;
-  width: 25px;
-  top: 0;
-}
-
-.tab:before {
-  right: -14px;
-  transform: skew(25deg);
-  border-radius: 0 6px 0 0;
-}
-
-.tab:after {
-  transform: skew(-25deg);
-  left: -14px;
-  border-radius: 6px 0 0 0;
-}
-
-.tab.active {
-  z-index: 50;
-  position: relative;
-}
-
-.tab:nth-child(2) div,
-.tab:nth-child(2):before,
-.tab:nth-child(2):after {
-  background: linear-gradient(to bottom, #a8e6a1, #76c776);
-}
-
-.tab:nth-child(3) div,
-.tab:nth-child(3):before,
-.tab:nth-child(3):after {
-  background: linear-gradient(to bottom, #a1c9e6, #6ba5d6);
-}
-
-.content-wrapper {
-  border-radius: 10px;
-  position: relative;
-  width: 100%;
-}
-
-.content__inner {
-  display: none;
-  background: linear-gradient(to bottom, #f9d877, #fee9a5);
-  border-radius: 10px;
-  padding: 0.8rem;
-  filter: drop-shadow(0px -2px 2px rgba(0, 0, 0, 0.1));
-  z-index: 5;
-}
-
-.content__inner.active { display: block; }
-
-.content__inner:nth-child(2).active {
-  background: linear-gradient(to bottom, #76c776, #a8e6a1) !important;
-}
-
-.content__inner:nth-child(3).active {
-  background: linear-gradient(to bottom, #6ba5d6, #a1c9e6) !important;
-}
-
 .page {
   padding: 1rem;
-  border-radius: 2px;
+  border-radius: 10px;
   min-height: 15rem;
   line-height: 150%;
   background-color: #f9f9f9;
@@ -1446,41 +1531,30 @@ const downloadCV = () => {
   background: #dadadb;
   color: #3a3939;
   padding: 5px 10px;
-  border-radius: 14px;
+  border-radius: 12px;
   font-size: 11px;
   font-weight: 500;
   position: relative;
-  overflow: hidden;
+  isolation: isolate;
   cursor: default;
   transition: background 0.4s, color 0.4s;
 }
 
-.role-badge::before {
-  content: '';
-  display: block;
+.flare {
   position: absolute;
-  background: rgba(255,255,255,0.9);
-  width: 80px;
-  height: 100%;
-  left: 0;
-  top: 0;
-  opacity: 0.5;
-  filter: blur(15px);
-  transform: translateX(-100px) skewX(-15deg);
+  background-color: currentColor;
+  clip-path: polygon(50% 0, 67% 33%, 100% 50%, 67% 67%, 50% 100%, 33% 67%, 0 50%, 33% 33%);
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  animation: flare-pop 0.6s ease-out forwards;
 }
 
-.role-badge::after {
-  content: '';
-  display: block;
-  position: absolute;
-  background: rgba(255,255,255,0.7);
-  width: 30px;
-  height: 100%;
-  left: 30px;
-  top: 0;
-  opacity: 0;
-  filter: blur(3px);
-  transform: translateX(-100px) skewX(-15deg);
+@keyframes flare-pop {
+  0%   { transform: scale(0); opacity: 0; }
+  40%  { transform: scale(1.2); opacity: 1; }
+  70%  { transform: scale(0.9); opacity: 0.8; }
+  100% { transform: scale(0); opacity: 0; }
 }
 
 .role-badge:hover::before {
@@ -1975,10 +2049,6 @@ a.repo-name:hover {
   .manage-account-btn { padding: 8px 22px; font-size: 13px; }
 
   .folder { max-width: 45rem; }
-  .tabs { margin: 0 1.5rem; width: calc(100% - 3rem); }
-  .tab { margin-right: 3rem; font-size: 95%; }
-  .tab span { font-size: 130%; min-width: 5.5rem; }
-  .content__inner { padding: 1rem; }
   .page { padding: 1.2rem; min-height: 18rem; }
   .project-gallery { flex-direction: row; gap: 12px; }
   .gallery-main { width: 180px; height: 135px; }
@@ -2116,6 +2186,93 @@ a.repo-name:hover {
   .notification-close img { width: 20px; height: 20px; }
   .footer { padding: 12px 20px; }
   .footer-text { font-size: 11px; }
+}
+
+.card-stack-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.card-stack {
+  width: 20rem;
+  height: 14rem;
+  position: relative;
+  display: grid;
+  place-content: center;
+  user-select: none;
+  touch-action: none;
+  transform-style: preserve-3d;
+}
+
+.stack-card-new {
+  cursor: grab;
+  background-color: #fff;
+  display: flex;
+  place-self: center;
+  position: absolute;
+  width: calc(100% - 2rem);
+  height: calc(100% - 2rem);
+  border: 1px solid #fff;
+  border-radius: 0.75rem;
+  z-index: calc(100 - var(--i));
+  transform: perspective(700px)
+    translateZ(calc(-1 * 12px * var(--i)))
+    translateY(calc(7px * var(--i)))
+    translateX(var(--swipe-x, 0px))
+    rotateY(var(--swipe-rotate, 0deg));
+  transition: transform 0.3s ease;
+  will-change: transform;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+.stack-card-new:active { cursor: grabbing; }
+
+.card-content-new {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  height: 100%;
+}
+
+.card-content-new img {
+  width: 100%;
+  height: 130px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.card-title-new {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #202124;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+.card-role-new {
+  font-size: 0.8rem;
+  color: #5f6368;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+}
+
+/* Detail View */
+.detail-view {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 30px);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.detail-view::-webkit-scrollbar { display: none; }
+
+.detail-content {
+  padding: 0 0.8rem 0.8rem;
 }
 
 /* Large Desktop */
