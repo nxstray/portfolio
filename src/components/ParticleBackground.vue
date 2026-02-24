@@ -285,14 +285,14 @@ onMounted(async () => {
     renderer.render(scene, camera)
   }
   animate()
+})
 
-  onUnmounted(() => {
-    cancelAnimationFrame(animId)
-    window.removeEventListener('pointermove', onPointerMove)
-    window.removeEventListener('touchmove', onTouchMove)
-    window.removeEventListener('resize', onResize)
-    renderer.dispose()
-  })
+onUnmounted(() => {
+  cancelAnimationFrame(animId)
+  window.removeEventListener('pointermove', onPointerMove)
+  window.removeEventListener('touchmove', onTouchMove)
+  window.removeEventListener('resize', onResize)
+  renderer.dispose()
 })
 </script>
 
