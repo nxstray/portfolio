@@ -133,7 +133,7 @@
           </div>
 
           <!-- DETAIL VIEW -->
-          <div v-else class="detail-view" @click.stop>
+          <div v-else class="detail-view" @click.stop @touchstart="onDetailTouchStart" @touchend="onDetailTouchEnd">
             <div class="detail-content">
               <div class="page">
                 <div v-if="projectTabs[activeTab].images" class="project-gallery">
@@ -390,6 +390,11 @@ const flareKey =  ref(0)
 const flarePositions = ref([])
 const badgeRef = ref(null)
 
+const savedCardIndex = ref(0)
+
+const detailTouchStartX = ref(0)
+const detailTouchStartY = ref(0)
+
 const showLightbox = ref(false)
 const currentImageIndex = ref(0)
 
@@ -406,7 +411,11 @@ const toolColors = {
   'Python': '#3776ab',
   'Java': '#b07219',
   'JavaScript': '#f7df1e',
-  'TypeScript': '#3178c6'
+  'TypeScript': '#3178c6',
+  'Redis': '#dc382d',
+  'Resend': '#000000',
+  'AWS S3': '#ff9900',
+  'Flyway': '#cc0200',
 }
 
 const badgeColors = [
@@ -494,7 +503,7 @@ const projectTabs = ref([
   {
     name: 'Pandigi',
     images: [pandigi1, pandigi2, pandigi3, pandigi4, pandigi5, pandigi6],
-    overview: 'A comprehensive client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, caching, rate limiting, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
+    overview: 'An enterprise-grade client and service request management system with AI-powered lead scoring capabilities. Features real-time notifications, role-based access control, caching, rate limiting, and intelligent lead prioritization using Google Gemini AI to optimize sales team workflow.',
     role: 'Full Stack Developer',
     skills: [
       'Responsive UI/UX Design',
@@ -504,7 +513,7 @@ const projectTabs = ref([
       'Message Broker & Cache Integration',
       'AI/ML Implementation'
     ],
-    tools: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker', 'RabbitMQ'],
+    tools: ['Angular', 'Spring Boot', 'PostgreSQL', 'Docker', 'RabbitMQ', 'Redis', 'AWS S3', 'Resend', 'Flyway'],
     repos: [
       { name: 'pppl-frontend', url: 'https://github.com/nxstray/pppl-frontend', language: 'TypeScript' },
       { name: 'pppl-backend', url: 'https://github.com/nxstray/pppl-backend', language: 'Java' }
@@ -561,6 +570,7 @@ const handleOverlayClick = () => {
 
 const openDetail = (index) => {
   activeTab.value = index
+  savedCardIndex.value = index
   showStackPreview.value = false
 }
 
@@ -581,20 +591,6 @@ onMounted(() => {
       showNotification.value = false
     }, 10000)
   }, 2000)
-})
-
-watch(showStackPreview, async (val) => {
-  if (val) {
-    await nextTick()
-    initCardStack()
-  }
-})
-
-watch(showProjectsModal, async (val) => {
-  if (val && showStackPreview.value) {
-    await nextTick()
-    initCardStack()
-  }
 })
 
 const initCardStack = () => {
@@ -721,6 +717,50 @@ const initCardStack = () => {
   cardStack.addEventListener('pointerup', handleEnd)
   cardStack.addEventListener('pointerleave', handleEnd)
   updatePositions()
+}
+
+watch(showStackPreview, async (val) => {
+  if (val) {
+    await nextTick()
+    
+    // Reorder DOM sebelum initCardStack
+    const cardStack = cardStackRef.value
+    if (cardStack && savedCardIndex.value > 0) {
+      const cards = [...cardStack.querySelectorAll('.stack-card-new')]
+      const targetIndex = cards.findIndex(c => parseInt(c.dataset.index) === savedCardIndex.value)
+      if (targetIndex > 0) {
+        const reordered = [...cards.slice(targetIndex), ...cards.slice(0, targetIndex)]
+        reordered.forEach(card => cardStack.appendChild(card))
+      }
+    }
+
+    initCardStack()
+  }
+})
+
+watch(showProjectsModal, async (val) => {
+  if (val && showStackPreview.value) {
+    await nextTick()
+    initCardStack()
+  }
+})
+
+const onDetailTouchStart = (e) => {
+  detailTouchStartX.value = e.touches[0].clientX
+  detailTouchStartY.value = e.touches[0].clientY
+}
+
+const onDetailTouchEnd = (e) => {
+  const deltaX = e.changedTouches[0].clientX - detailTouchStartX.value
+  const deltaY = e.changedTouches[0].clientY - detailTouchStartY.value
+
+  if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 80) {
+    showStackPreview.value = true
+    clearInterval(flareInterval.value)
+    flareInterval.value = null
+    flareKey.value = 0
+    currentBadgeColor.value = { bg: '#dadadb', text: '#3a3939' }
+  }
 }
 
 const levenshtein = (a, b) => {
@@ -1638,7 +1678,12 @@ const downloadCV = () => {
   line-height: 1.3;
 }
 
-.project-tools { margin-top: 1rem; }
+.project-tools {
+  margin-top: 1rem;
+  padding-bottom: 1rem;
+  max-width: 100%;
+  overflow: hidden;
+}
 
 .project-tools strong {
   display: block;
@@ -2234,13 +2279,13 @@ a.repo-name:hover {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  padding: 0.75rem;
+  padding: 0.7rem;
   height: 100%;
 }
 
 .card-content-new img {
   width: 100%;
-  height: 130px;
+  height: 140px;
   object-fit: cover;
   border-radius: 0.5rem;
   pointer-events: none;
@@ -2248,7 +2293,7 @@ a.repo-name:hover {
 }
 
 .card-title-new {
-  font-size: 1.2rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #202124;
   font-family: 'Segoe UI', Tahoma, sans-serif;
