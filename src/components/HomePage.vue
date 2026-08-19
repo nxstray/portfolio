@@ -73,7 +73,7 @@
 
         <div class="sub-heading">for recruiters / search committees</div>
         <div style="font-size: 13px;">
-          <a href="/CV_Afwan_Apriansyah_.pdf" target="_blank">cv</a>, 
+          <a href="/cv_afwan_apriansyah_.pdf" target="_blank">cv</a>, 
           <a href="mailto:afwanapriansyah@gmail.com">email</a>, 
           <a href="https://github.com/nxstray" target="_blank">github</a>, 
           <a href="https://linkedin.com/in/afwan-apriansyah" target="_blank">linkedin</a>
