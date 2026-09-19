@@ -3,18 +3,11 @@
     <!-- Header Section -->
     <div class="header">
       <div class="profile-box">
-        <div class="dim-label dim-top">{{ imgWidth || '—' }}</div>
-        <div class="profile-img-row">
-          <span class="dim-label dim-left">{{ imgHeight || '—' }}</span>
-          <img 
-            src="/formal-bg-crop-white.jpg" 
-            alt="Afwan Apriansyah" 
-            class="profile-img" 
-            @load="handleImageLoad"
-          >
-          <span class="dim-label dim-right">{{ imgHeight || '—' }}</span>
-        </div>
-        <div class="dim-label dim-bottom">{{ imgWidth || '—' }}</div>
+        <img
+          src="/formal-bg-crop-white.jpg"
+          alt="Afwan Apriansyah"
+          class="profile-img"
+        >
       </div>
       <div class="header-content">
         <h1>Afwan Apriansyah</h1>
@@ -136,20 +129,7 @@
 
 <script>
 export default {
-  name: 'HomePage',
-  data() {
-    return {
-      imgWidth: 0,
-      imgHeight: 0
-    }
-  },
-  methods: {
-    handleImageLoad(event) {
-      const img = event.target;
-      this.imgWidth = img.naturalWidth;
-      this.imgHeight = img.naturalHeight;
-    }
-  }
+  name: 'HomePage'
 }
 </script>
 
@@ -193,7 +173,7 @@ a:hover {
   color: #0000ff;
 }
 
-/* Header Section & Profile Dimensions */
+/* Header Section */
 .header {
   display: flex;
   align-items: center;
@@ -206,35 +186,12 @@ a:hover {
   align-items: center;
   flex-shrink: 0;
 }
-.profile-img-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
 .profile-img {
   width: 96px;
   height: 128px;
   object-fit: cover;
   border: 1px solid #ccc;
   display: block;
-}
-
-.dim-label {
-  font-size: 11px;
-  color: #666;
-  font-family: monospace, sans-serif;
-}
-.dim-top {
-  margin-bottom: 3px;
-}
-.dim-bottom {
-  margin-top: 3px;
-}
-.dim-left, .dim-right {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  display: inline-block;
-  white-space: nowrap;
 }
 
 .header-content {
@@ -355,8 +312,11 @@ hr.divider:last-of-type {
   }
   .header {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
+  }
+  .header-content {
+    text-align: center;
   }
   .grid-container {
     grid-template-columns: 1fr;
