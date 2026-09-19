@@ -4,7 +4,7 @@
     <div class="header">
       <div class="profile-box">
         <img
-          src="/formal-bg-crop-white.jpg"
+          src="/formal-bg-crop-white-fixed.jpg"
           alt="Afwan Apriansyah"
           class="profile-img"
         >
