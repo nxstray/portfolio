@@ -7,7 +7,7 @@
         <div class="profile-img-row">
           <span class="dim-label dim-left">{{ imgHeight || '—' }}</span>
           <img 
-            src="/profile.jpg" 
+            src="/formal-bg-crop-white.jpg" 
             alt="Afwan Apriansyah" 
             class="profile-img" 
             @load="handleImageLoad"
@@ -34,10 +34,6 @@
         <div class="col-title">summary</div>
         <table class="summary-table">
           <tbody>
-            <tr>
-              <td class="label">status</td>
-              <td>open to fulltime & internship positions</td>
-            </tr>
             <tr>
               <td class="label">field</td>
               <td>Fullstack web dev, QA Engineering, SDET</td>
